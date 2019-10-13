@@ -17,6 +17,8 @@ setup(name='spsuite',
 	],
 	install_requires=[
 		'python-nginx',
-		'validators'
+		'validators',
+        'termcolor',
+        'tabulate'
 	]
 )

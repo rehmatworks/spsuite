@@ -45,7 +45,7 @@ class Serverpilot:
                 os.chdir(appsdir)
                 apps = list(filter(os.path.isdir, os.listdir(os.curdir)))
                 for app in apps:
-                    appsdata.append([app, self.username, du(self.apdir(app)), cdatef(self.appdir(app)), mdatef(self.appdir(app))])
+                    appsdata.append([app, self.username, du(self.appdir(app)), cdatef(self.appdir(app)), mdatef(self.appdir(app))])
         if len(appsdata):
             print(colored(tabulate(appsdata, headers=['App Name', 'SSH User', 'Disk Used', 'Created', 'Last Modified']), 'green'))
         else:

@@ -24,11 +24,11 @@ class Serverpilot:
         return os.path.join(self.appsdir(), appname)
 
     def listapps(self):
+        appsdata = []
         if not self.username:
             os.chdir(self.usrdataroot)
             users = list(filter(os.path.isdir, os.listdir(os.curdir)))
             if len(users):
-                appsdata = []
                 for user in users:
                     self.username = user
                     appsdir = self.appsdir()
@@ -36,9 +36,7 @@ class Serverpilot:
                         os.chdir(appsdir)
                         apps = list(filter(os.path.isdir, os.listdir(os.curdir)))
                         for app in apps:
-                            appsdata.append([app, self.username, du(os.path.join(appsdir, app))])
-            else:
-                print(colored('No system users found!', 'red'))
+                            appsdata.append([app, self.username, du(os.path.join(appsdir, app)), cdatef(self.appdir(app)), mdatef(self.appdir(app))])
         else:
             appsdir = self.appsdir()
             if not os.path.exists(appsdir):
@@ -46,10 +44,9 @@ class Serverpilot:
             else:
                 os.chdir(appsdir)
                 apps = list(filter(os.path.isdir, os.listdir(os.curdir)))
-                appsdata = []
                 for app in apps:
-                    appsdata.append([app, self.username, du(os.path.join(appsdir, app))])
+                    appsdata.append([app, self.username, du(self.apdir(app)), cdatef(self.appdir(app)), mdatef(self.appdir(app))])
         if len(appsdata):
-            print(colored(tabulate(appsdata, headers=['App Name', 'SSH User', 'Disk Used']), 'green'))
+            print(colored(tabulate(appsdata, headers=['App Name', 'SSH User', 'Disk Used', 'Created', 'Last Modified']), 'green'))
         else:
             print(colored('Looks like you have not created any apps yet!', 'yellow'))

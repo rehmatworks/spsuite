@@ -9,3 +9,4 @@ spsuite.egg-info
 lib
 lib64
 test-data
+*.pyc

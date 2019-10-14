@@ -40,6 +40,10 @@ def main():
     sqluser = subparsers.add_parser('createsqluser', help='Create a new MySQL user.')
     sqluser.add_argument('--name', dest='name', help='The name for your new MySQL user.', required=True)
 
+    # Update MySQL user password
+    sqluserpass = subparsers.add_parser('updatesqlpassword', help='Update any MySQL user\'s password.')
+    sqluserpass.add_argument('--user', dest='user', help='The name for MySQL user for which you want to update the password.', required=True)
+
     # Create MySQL database
     createdb = subparsers.add_parser('createdb', help='Create a new MySQL database.')
     createdb.add_argument('--name', dest='name', help='The name for your new database.', required=True)
@@ -202,7 +206,28 @@ def main():
         if len(password.strip()) >= 5:
             try:
                 sqlexec("CREATE USER {} IDENTIFIED BY '{}'".format(args.name, password))
-                print(colored('MySQL user {} has been successfully created.'.format(args.name)))
+                print(colored('MySQL user {} has been successfully created.'.format(args.name), 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'updatesqlpassword':
+        try:
+            userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
+        except:
+            userexists = False;
+        if not userexists:
+            print(colored("User {} does not exist.".format(args.user), "yellow"))
+            sys.exit(0)
+
+        password = ""
+        while len(password.strip()) < 5:
+            password = getpass()
+            if len(password.strip()) < 5:
+                print(colored("Password should contain at least 5 characters.", "yellow"))
+        if len(password.strip()) >= 5:
+            try:
+                sqlexec("UPDATE mysql.user SET Password=PASSWORD('{}') WHERE USER='{}'".format(password, args.name))
+                print(colored('MySQL user {}\'s password has been successfully updated.'.format(args.name), 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))
 

@@ -224,7 +224,7 @@ class ServerPilot:
         for dir in dirs:
             if os.path.exists(dir):
                 rmcontent(dir)
-        self.php oriphp
+        self.php = oriphp
 
     def createindex(self):
         with open(os.path.join(self.appdir(), 'public', 'index.php'), 'w') as indexf:

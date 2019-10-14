@@ -191,16 +191,17 @@ def main():
         except:
             userexists = False;
         if not userexists:
-            print(colored("The provided user does not exist. Please create it first.", "yellow"))
+            print(colored("User {} does not exist. Please create it first.".format(args.user), "yellow"))
             sys.exit(0)
 
         if validators.slug(args.name) is not True:
             print(colored("The database name should only contain letters, numbers, hyphens and dashes.", "yellow"))
             sys.exit(0)
-
+            
         try:
             sqlexec("CREATE DATABASE {}".format(args.name))
             sqlexec("GRANT ALL PRIVILEGES ON {}.*  TO '{}'@'localhost'".format(args.name, args.user))
             sqlexec("FLUSH PRIVILEGES")
+            print(colored("The database {} has been created and all permissions are granted to {} on this database".format(args.name, args.user), "green"))
         except Exception as e:
             print(colored(str(e), "yellow"))

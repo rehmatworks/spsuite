@@ -219,6 +219,11 @@ class ServerPilot:
         runcmd('usermod --shell /bin/bash {}'.format(self.username))
         runcmd('usermod -d {} {}'.format(self.usrhome(), self.username))
 
+        userdirs = self.userdirs()
+        for usrdir in userdirs:
+            if not os.path.exists(usrdir):
+                runcmd('mkdir -p {}'.format(usrdir))
+
         bashprofiledata = parsetpl('bashprofile.tpl')
         with open(os.path.join(self.usrhome(), '.profile'), 'w') as bp:
             bp.write(bashprofiledata)

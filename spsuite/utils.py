@@ -388,5 +388,6 @@ class ServerPilot:
     def updatedomains(self):
         self.createnginxvhost()
         self.createapachevhost()
+        self.saveappmeta()
         reloadservice('nginx-sp')
         reloadservice('apache-sp')

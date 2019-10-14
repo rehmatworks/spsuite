@@ -8,19 +8,24 @@
 ###############################################################################
 
 server {
-    listen       80;
-    listen       [::]:80;
+    listen       443 ssl http2;
+    listen       [::]:443 ssl http2;
     server_name {{ servername }}{% if serveralias %} {{ serveralias }}{% endif %};
+
+    ssl_certificate_key      ssl/{{ appname }}.key;
+    ssl_certificate          ssl/{{ appname }}.combined_crt;
 
     root   /srv/users/{{ username }}/apps/{{ appname }}/public;
 
-    access_log  /srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_nginx.access.log  main;
-    error_log  /srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_nginx.error.log;
+    access_log  /srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_nginx.access_ssl.log  main;
+    error_log  /srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_nginx.error_ssl.log;
 
     proxy_set_header    Host              $host;
     proxy_set_header    X-Real-IP         $remote_addr;
     proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header    X-Forwarded-SSL   on;
+    proxy_set_header    X-Forwarded-Proto $scheme;
 
-    include /etc/nginx-sp/vhosts.d/{{ appname }}.d/*.nonssl_conf;
+    include /etc/nginx-sp/vhosts.d/{{ appname }}.d/*.ssl_conf;
     include /etc/nginx-sp/vhosts.d/{{ appname }}.d/*.conf;
 }

@@ -72,18 +72,31 @@ class ServerPilot:
         else:
             print(colored('Looks like you have not created any apps yet!', 'yellow'))
 
-    def createappdirs(self, appname):
+    def createappdirs(self, appname, domains = []):
         appdir = self.appdir(appname)
         os.makedirs(appdir)
         tpldata = {
-            'appname': appname
+            'appname': appname,
+            'username': self.username
         }
-        # Create NGINX vhost
+
+        # Create logs dir
+        os.makedirs(os.path.join(self.usrhome(), 'log', appname))
+
+        # Create NGINX vhost & conf dir
+        os.makedirs(os.path.join(self.nginxroot, self.vhostdir, '{}.d'.format(appname)))
+        nginxmaindata = parsetpl('nginx-main.tpl')
+        with open(os.path.join(self.nginxroot, self.vhostdir, '{}.d'.format(appname), 'main.conf'), 'w') as nginxmain:
+            nginxmain.write(nginxmaindata)
         nginxtpldata = parsetpl('nginx.tpl', data=tpldata)
         with open(self.appnginxconf(appname), 'w') as nginxconf:
             nginxconf.write(nginxtpldata)
 
-        # Create Apache vhost
+        # Create Apache vhost & conf dir
+        os.makedirs(os.path.join(self.apacheroot, self.vhostdir, '{}.d'.format(appname)))
+        apachemaindata = parsetpl('apache-main.tpl')
+        with open(os.path.join(self.apacheroot, self.vhostdir, '{}.d'.format(appname), 'main.conf'), 'w') as apachemain:
+            apachemain.write(apachemaindata)
         apachetpldata = parsetpl('apache.tpl', data=tpldata)
         with open(self.appapacheconf(appname), 'w') as apacheconf:
             apacheconf.write(apachetpldata)

@@ -7,6 +7,7 @@ import shutil
 import pwd
 import pymysql
 import configparser
+import warnings
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -60,11 +61,13 @@ def doconfirm(msg = "Do you really want to perform this irreversible action"):
     return answer == "y"
 
 def sqlexec(sql):
-    config = configparser.ConfigParser()
-    config.read('/root/.my.cnf')
-    password = config['client']['password']
-    db = pymysql.connect("localhost", "root", password)
-    curr = db.cursor()
-    res = curr.execute(sql)
-    db.close()
-    return res  > 0
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        config = configparser.ConfigParser()
+        config.read('/root/.my.cnf')
+        password = config['client']['password']
+        db = pymysql.connect("localhost", "root", password)
+        curr = db.cursor()
+        res = curr.execute(sql)
+        db.close()
+        return res  > 0

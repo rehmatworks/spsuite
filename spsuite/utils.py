@@ -121,6 +121,14 @@ class ServerPilot:
     def fixappperms(self):
         runcmd("chown -R {}:{} {}".format(self.username, self.username, self.appsdir()))
 
+    def userdirs(self):
+        return [
+            self.usrhome(),
+            os.path.join(self.usrhome(), 'log'),
+            os.path.join(self.usrhome(), 'run'),
+            os.path.join(self.usrhome(), 'tmp'),
+        ]
+
     def appdirs(self):
         if not self.app:
             raise Exception('App name has not been provided.')
@@ -133,6 +141,7 @@ class ServerPilot:
         return [
             os.path.join(self.appsdir(), self.app),
             os.path.join(self.usrhome(), 'log', self.app),
+            os.path.join(self.usrhome(), 'tmp', self.app),
             os.path.join(self.apacheroot, self.vhostdir, '{}.d'.format(self.app)),
             os.path.join(self.nginxroot, self.vhostdir, '{}.d'.format(self.app)),
             os.path.join(self.phpfpmdir(), '{}.d'.format(self.app))
@@ -209,6 +218,18 @@ class ServerPilot:
         runcmd('usermod -a -G sp-sysusers {}'.format(self.username, self.username))
         runcmd('usermod --shell /bin/bash {}'.format(self.username))
         runcmd('usermod -d {} {}'.format(self.usrhome(), self.username))
+
+        bashprofiledata = parsetpl('bashprofile.tpl')
+        with open(os.path.join(self.usrhome(), '.profile'), 'w') as bp:
+            bp.write(bashprofiledata)
+
+        bashlogoutdata = parsetpl('bashlogout.tpl')
+        with open(os.path.join(self.usrhome(), '.bash_logout'), 'w') as bl:
+            bl.write(bashlogoutdata)
+
+        bashrcdata = parsetpl('bashrc.tpl')
+        with open(os.path.join(self.usrhome(), '.bashrc'), 'w') as brc:
+            brc.write(bashrcdata)
 
     def reloadservices(self):
         reloadservice('nginx-sp')

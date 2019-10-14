@@ -50,12 +50,12 @@ def main():
     createdb.add_argument('--user', dest='user', help='MySQL user for the new database.', required=True)
 
     # Delete MySQL database user
-    deldbuser = subparsers.add_parser('deletesqluser', help='Drop a MySQL user.')
-    deldbuser.add_argument('--user', dest='user', help='The name of the database user that you want to delete.', required=True)
+    deldbuser = subparsers.add_parser('dropuser', help='Drop a MySQL user.')
+    deldbuser.add_argument('--name', dest='name', help='The name of the database user that you want to delete.', required=True)
 
     # Delete MySQL database
     dropdb = subparsers.add_parser('dropdb', help='Drop a MySQL database.')
-    dropdb.add_argument('--database', dest='database', help='The name of the database that you want to delete.', required=True)
+    dropdb.add_argument('--name', dest='name', help='The name of the database that you want to delete.', required=True)
 
     # Change PHP version for all apps
     changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
@@ -266,18 +266,18 @@ def main():
         except Exception as e:
             print(colored(str(e), "yellow"))
 
-    if args.action == 'deletesqluser':
+    if args.action == 'dropuser':
         try:
-            sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(args.user))
+            sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(args.name))
         except:
             pass
         try:
-            sqlexec("DROP USER {}".format(args.user))
+            sqlexec("DROP USER {}".format(args.name))
         except Exception as e:
             print(colored(str(e), 'yellow'))
 
     if args.action == 'dropdb':
         try:
-            sqlexec("DROP DATABASE {}".format(args.database))
+            sqlexec("DROP DATABASE {}".format(args.name))
         except Exception as e:
             print(colored(str(e), 'yellow'))

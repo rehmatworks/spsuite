@@ -273,11 +273,13 @@ def main():
             pass
         try:
             sqlexec("DROP USER {}".format(args.name))
+            print(colored("The database user {} has been dropped.".format(args.name)))
         except Exception as e:
             print(colored(str(e), 'yellow'))
 
     if args.action == 'dropdb':
         try:
             sqlexec("DROP DATABASE {}".format(args.name))
+            print(colored("The database {} has been dropped".format(args.name)))
         except Exception as e:
             print(colored(str(e), 'yellow'))

@@ -121,7 +121,7 @@ def main():
         sp.setapp(args.app)
         try:
             sp.changephpversion()
-            print(colored('PHP version for the app {} is changed to {}'.format(args.name, args.php), 'green'))
+            print(colored('PHP version for the app {} is changed to {}'.format(args.app, args.php), 'green'))
         except Exception as e:
             print(colored(str(e), 'yellow'))
 

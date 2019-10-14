@@ -306,7 +306,11 @@ def main():
         i = 0
         for db in dbsres:
             i += 1
-            curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
-            dbs.append([i, db[0], curr.rowcount])
+            try:
+                curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
+                tablescount = curr.rowcount
+            except:
+                tablescount = 0
+            dbs.append([i, db[0], tablescount])
         dbconn.close()
         print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables']), 'green'))

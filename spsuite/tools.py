@@ -60,13 +60,17 @@ def doconfirm(msg = "Do you really want to perform this irreversible action"):
         answer = input("{} [Y/N] ".format(msg)).lower()
     return answer == "y"
 
+def getdbconn():
+    config = configparser.ConfigParser()
+    config.read('/root/.my.cnf')
+    password = config['client']['password']
+    db = pymysql.connect("localhost", "root", password)
+    return db
+
 def sqlexec(sql):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        config = configparser.ConfigParser()
-        config.read('/root/.my.cnf')
-        password = config['client']['password']
-        db = pymysql.connect("localhost", "root", password)
+        db = getdbconn()
         curr = db.cursor()
         res = curr.execute(sql)
         db.close()

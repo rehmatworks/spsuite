@@ -226,10 +226,14 @@ def main():
                 print(colored("Password should contain at least 5 characters.", "yellow"))
         if len(password.strip()) >= 5:
             try:
-                sqlexec("UPDATE mysql.user SET Password=PASSWORD('{}') WHERE USER='{}'".format(password, args.user))
+                sqlexec("UPDATE mysql.user SET authentication_string=PASSWORD('{}') WHERE USER='{}'".format(password, args.user))
                 print(colored('MySQL user {}\'s password has been successfully updated.'.format(args.user), 'green'))
             except Exception as e:
-                print(colored(str(e), 'yellow'))
+                try:
+                    sqlexec("UPDATE mysql.user SET Password=PASSWORD('{}') WHERE USER='{}'".format(password, args.user))
+                    print(colored('MySQL user {}\'s password has been successfully updated.'.format(args.user), 'green'))
+                except:
+                    print(colored(str(e), 'yellow'))
 
     if args.action == 'createdb':
         try:

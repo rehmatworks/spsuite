@@ -8,6 +8,9 @@ import validators
 from .tools import doconfirm
 
 def main():
+
+    sp = ServerPilot()
+
     ap = argparse.ArgumentParser(description='Command line tools to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")
 
@@ -26,6 +29,11 @@ def main():
     delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
     delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
 
+    # Change PHP version
+    changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
+    changephp.add_argument('--name', dest='name', help='The name of the app that you want to change PHP version for.', required=True)
+    changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), required=True)
+
     # Deny unknown domains
     delapp = subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -37,8 +45,6 @@ def main():
     if len(sys.argv) <= 1:
         ap.print_help()
         sys.exit(0)
-
-    sp = ServerPilot()
 
     if args.action == 'listapps':
         if args.user:

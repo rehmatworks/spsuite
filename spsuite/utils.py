@@ -155,7 +155,7 @@ class ServerPilot:
         if not os.path.exists(self.metadir):
             runcmd('mkdir -p {}'.format(self.metadir))
         with open(os.path.join(self.metadir, '{}.json'.format(filename)), 'w') as metafile:
-            metafile.write(json.dumps(metainfo))
+            metafile.write(json.dumps(data))
 
     def getmeta(self, filename):
         jsonfile = os.path.join(self.metadir, '{}.json'.format(filename))

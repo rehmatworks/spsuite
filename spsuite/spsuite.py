@@ -94,7 +94,7 @@ def main():
         try:
             sp.denyunknown()
             print(colored('Unknown domains are now not allowed.', 'green'))
-        catch Exception as e:
+        except Exception as e:
             print(colored(str(e)), 'yellow')
 
     if args.action == 'allowunknown':

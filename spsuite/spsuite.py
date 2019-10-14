@@ -301,15 +301,12 @@ def main():
         curr = dbconn.cursor()
         curr.execute("SHOW DATABASES")
         dbsres = curr.fetchall()
-        dbconn.close()
 
         dbs = []
         i = 0
         for db in dbsres:
             i += 1
-            dbconn = getdbconn()
-            curr = dbconn.cursor()
-            curr.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{}'".format(db[0]))
+            curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
             dbs.append([i, db[0], curr.rowcount])
-            dbconn.close()
+        dbconn.close()
         print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables']), 'green'))

@@ -81,7 +81,7 @@ class ServerPilot:
             return True
         return False
 
-    def listapps(self):
+    def findapps(self):
         appsdata = []
         i = 0
         if not self.username:
@@ -113,6 +113,10 @@ class ServerPilot:
                         i += 1
                         info = self.appdetails()
                         appsdata.append([i, self.app, info.get('user'), info.get('php'), du(self.appdir()), mdatef(self.appdir())])
+        return appsdata
+
+    def listapps(self):
+        appsdata = self.findapps()
         if len(appsdata):
             print(colored(tabulate(appsdata, headers=['#', 'App Name', 'SSH User', 'PHP', 'Disk Used', 'Modified']), 'green'))
         else:
@@ -359,3 +363,12 @@ class ServerPilot:
                 self.saveappmeta()
         else:
             raise Exception('Provided app name seem to be invalid.')
+
+    def deleteallapps(self):
+        apps = self.findapps()
+        if len(apps) > 0:
+            for app in apps:
+                print('{} will be deleted.'.format(app[1]))
+                # self.delapp(app[1])
+        else:
+            raise Exception('No apps found!')

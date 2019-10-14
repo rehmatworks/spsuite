@@ -14,20 +14,30 @@ def main():
     ap = argparse.ArgumentParser(description='Command line tools to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")
 
-    # List apps commands
+    # List apps
     listapps = subparsers.add_parser('listapps', help='Show all existing apps.')
     listapps.add_argument('--user', dest='user', help='SSH user to list apps for.', required=False)
 
-    # Create app commands
+    # Create app
     createapp = subparsers.add_parser('createapp', help='Create a new app.')
     createapp.add_argument('--name', dest='name', help='The name for your new app.', required=True)
     createapp.add_argument('--user', dest='user', help='The SSH username for your new app. User will be created if not present.', required=True)
     createapp.add_argument('--php', dest='php', help='PHP version for your new app.', default=False)
     createapp.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 
-    # Delete app commands
+    # Delete app
     delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
     delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
+
+    # Delete all apps
+    delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
+    delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
+
+    args = ap.parse_args()
+
+    if len(sys.argv) <= 1:
+        ap.print_help()
+        sys.exit(0)
 
     # Change PHP version
     changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
@@ -38,13 +48,7 @@ def main():
     delapp = subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
     # Allow unknown domains
-    delapp = subparsers.add_parser('allowunknown', help='Deny requests from unknown domains.')
-
-    args = ap.parse_args()
-
-    if len(sys.argv) <= 1:
-        ap.print_help()
-        sys.exit(0)
+    delapp = subparsers.add_parser('allowunknown', help='Allow requests from unknown domains.')
 
     if args.action == 'listapps':
         if args.user:
@@ -120,3 +124,18 @@ def main():
             print(colored('PHP version for the app {} is changed to {}'.format(args.name, args.php), 'green'))
         except Exception as e:
             print(colored(str(e), 'yellow'))
+
+    if args.action == 'delallapps':
+        if args.user:
+            sp.setuser(args.user)
+            msg = 'All apps owned by {} have been deleted.'.format(args.user)
+            confirmmsg = 'Do you really want to delete all apps owned by {}?'.format(args.user)
+        else:
+            msg = 'All apps existing on this server have been deleted.'
+            confirmmsg = 'Do you really want to delete all apps existing on this server?'
+        if doconfirm(confirmmsg):
+            try:
+                sp.deleteallapps()
+                print(colored(msg, 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))

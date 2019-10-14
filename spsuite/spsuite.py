@@ -309,8 +309,12 @@ def main():
             try:
                 curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
                 tablescount = curr.rowcount
+                curr.execute("SELECT SUM(data_length + index_length) / 1024 / 1024 AS 'size' FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
+                sizeres = curr.fetchone()
+                dbsize = float(sizeres[0])
             except:
                 tablescount = 0
-            dbs.append([i, db[0], tablescount])
+                dbsize = 0
+            dbs.append([i, db[0], tablescount, '{} MBs'.format(str(round(size, 2)))])
         dbconn.close()
-        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables']), 'green'))
+        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Size']), 'green'))

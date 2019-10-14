@@ -349,6 +349,7 @@ class ServerPilot:
                 raise Exception('The app {} is already using PHP {}'.format(self.app, self.php))
             else:
                 self.deletefpmpool(info.get('php'))
+                self.username = info.get('user')
                 fpmconfmain = os.path.join(self.phpfpmdir(), '{}.d'.format(self.app))
                 if not os.path.exists(fpmconfmain):
                     runcmd('mkdir -p {}'.format(fpmconfmain))

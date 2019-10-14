@@ -25,6 +25,11 @@ def main():
     createapp.add_argument('--php', dest='php', help='PHP version for your new app.', default=False)
     createapp.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 
+    # Update domains
+    updatedomains = subparsers.add_parser('updatedomains', help='Update an apps\' domains and recreate vhost files.')
+    updatedomains.add_argument('--name', dest='name', help='The name of your app for which you want to modify the domains.', required=True)
+    updatedomains.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
+
     # Delete app
     delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
     delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
@@ -94,6 +99,19 @@ def main():
             print(colored('The app {} has been successfully created!'.format(args.name), 'green'))
         except Exception as e:
             print(colored(str(e), 'red'))
+
+    if args.action == 'updatedomains':
+        try:
+            sp.setdomains(args.domains)
+        except Exception as e:
+            print(colored(str(e), 'red'))
+            sys.exit(0)
+        sp.setapp(args.name)
+        try:
+            sp.updatedomains()
+            print(colored('App domains have been updated.', 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))
 
     if args.action == 'deleteapp':
         if doconfirm("Do you really want to delete the app {} permanently?".format(args.name)):

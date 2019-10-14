@@ -384,3 +384,9 @@ class ServerPilot:
                     pass
         else:
             raise Exception('No apps found!')
+
+    def updatedomains(self):
+        self.createnginxvhost()
+        self.createapachevhost()
+        reloadservice('nginx-sp')
+        reloadservice('apache-sp')

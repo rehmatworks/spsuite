@@ -65,6 +65,6 @@ def sqlexec(sql):
     password = config['client']['password']
     db = pymysql.connect("localhost", "root", password)
     curr = db.cursor()
-    curr.execute(sql)
+    res = curr.execute(sql)
     db.close()
-    return len(curr.fetchall()) > 0
+    return res  > 0

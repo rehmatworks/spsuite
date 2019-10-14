@@ -297,8 +297,8 @@ def main():
             print(colored(str(e), 'yellow'))
 
     if args.action == 'listdbs':
-        db = getdbconn()
-        curr = db.cursor()
+        dbconn = getdbconn()
+        curr = dbconn.cursor()
         curr.execute("SHOW DATABASES")
         dbsres = curr.fetchall()
 
@@ -307,5 +307,5 @@ def main():
         for db in dbsres:
             i += 1
             dbs.append([i, db[0], curr.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{}'".format(db[0]))])
-        db.close()
+        dbconn.close()
         print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables']), 'green'))

@@ -67,3 +67,4 @@ def sqlexec(sql):
     curr = db.cursor()
     curr.execute(sql)
     db.close()
+    return len(cur.fetchall()) > 0

@@ -23,6 +23,9 @@ def main():
     # List databases
     subparsers.add_parser('listdbs', help='Show all existing databases.')
 
+    # List database users
+    subparsers.add_parser('listdbusers', help='Show all existing database users.')
+
     # Create app
     createapp = subparsers.add_parser('createapp', help='Create a new app.')
     createapp.add_argument('--name', dest='name', help='The name for your new app.', required=True)
@@ -318,3 +321,17 @@ def main():
             dbs.append([i, db[0], tablescount, '{} MB'.format(str(round(dbsize, 2)))])
         dbconn.close()
         print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Size']), 'green'))
+
+    if args.action == 'listdbusers':
+        dbconn = getdbconn()
+        curr = dbconn.cursor()
+        curr.execute("SELECT User FROM mysql.user")
+        usersres = curr.fetchall()
+
+        users = []
+        i = 0
+        for user in usersres:
+            i += 1
+            dbs.append([i, user[0]])
+        dbconn.close()
+        print(colored(tabulate(dbs, headers=['#', 'User Name']), 'green'))

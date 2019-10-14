@@ -270,11 +270,11 @@ class ServerPilot:
         self.saveappmeta()
 
         # Fix app permissions
-        # self.fixappperms()
+        self.fixappperms()
         try:
             self.reloadservices()
         except Exception as e:
-            # self.delapp()
+            self.delapp()
             self.reloadservices()
             print(colored(str(e), 'red'))
 

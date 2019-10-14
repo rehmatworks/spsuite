@@ -24,8 +24,8 @@ def parsetpl(tpl, data={}):
 
 def runcmd(cmd):
     FNULL = open(os.devnull, 'w')
-    # if not "sudo" in cmd:
-    #     cmd = "sudo {}".format(cmd)
+    if not "sudo" in cmd:
+        cmd = "sudo {}".format(cmd)
     subprocess.check_call([cmd], shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
 
 def reloadservice(service):

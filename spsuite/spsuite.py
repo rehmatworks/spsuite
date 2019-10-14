@@ -6,6 +6,7 @@ from termcolor import colored
 import sys
 import validators
 from .tools import doconfirm, sqlexec
+from getpass import getpass
 
 def main():
 
@@ -35,7 +36,11 @@ def main():
     changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
-    # Create database
+    # Create MySQL user
+    sqluser = subparsers.add_parser('createsqluser', help='Create a new MySQL user.')
+    sqluser.add_argument('--name', dest='name', help='The name for your new MySQL user.', required=True)
+
+    # Create MySQL database
     createdb = subparsers.add_parser('createdb', help='Create a new MySQL database.')
     createdb.add_argument('--name', dest='name', help='The name for your new database.', required=True)
     createdb.add_argument('--user', dest='user', help='MySQL user for the new database.', required=True)
@@ -71,45 +76,45 @@ def main():
         try:
             sp.listapps()
         except Exception as e:
-            print(colored(str(e), 'red'))
+            print(colored(str(e), 'yellow'))
 
     if args.action == 'createapp':
         if validators.slug(args.name) is not True:
-            print(colored('App name should only contain letters, dashes/hyphens and numbers.', 'red'))
+            print(colored('App name should only contain letters, dashes/hyphens and numbers.', 'yellow'))
             sys.exit(0)
 
         if validators.slug(args.user) is not True:
-            print(colored('SSH username should only contain letters, dashes/hyphens and numbers.', 'red'))
+            print(colored('SSH username should only contain letters, dashes/hyphens and numbers.', 'yellow'))
             sys.exit(0)
 
         if args.php:
             try:
                 sp.setphp(args.php)
             except Exception as e:
-                print(colored(str(e), 'red'))
+                print(colored(str(e), 'yellow'))
                 sys.exit(0)
 
         try:
             sp.setdomains(args.domains)
         except Exception as e:
-            print(colored(str(e), 'red'))
+            print(colored(str(e), 'yellow'))
             sys.exit(0)
         sp.setapp(args.name)
         sp.setuser(args.user)
         if sp.isvalidapp():
-            print(colored('An app with name {} already exists.'.format(args.name), 'red'))
+            print(colored('An app with name {} already exists.'.format(args.name), 'yellow'))
             sys.exit(0)
         try:
             sp.createapp()
             print(colored('The app {} has been successfully created!'.format(args.name), 'green'))
         except Exception as e:
-            print(colored(str(e), 'red'))
+            print(colored(str(e), 'yellow'))
 
     if args.action == 'updatedomains':
         try:
             sp.setdomains(args.domains)
         except Exception as e:
-            print(colored(str(e), 'red'))
+            print(colored(str(e), 'yellow'))
             sys.exit(0)
         sp.setapp(args.app)
 
@@ -123,13 +128,13 @@ def main():
         if doconfirm("Do you really want to delete the app {} permanently?".format(args.name)):
             sp.setapp(args.name)
             if not sp.isvalidapp():
-                print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'red'))
+                print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'yellow'))
                 sys.exit(0)
             try:
                 sp.delapp()
                 print(colored('The app {} has been successfully deleted!'.format(args.name), 'green'))
             except Exception as e:
-                print(colored(str(e), 'red'))
+                print(colored(str(e), 'yellow'))
 
     if args.action == 'denyunknown':
         try:
@@ -185,6 +190,22 @@ def main():
             except Exception as e:
                 print(colored(str(e), 'yellow'))
 
+    if args.action == 'createsqluser':
+        if validators.slug(args.name) is not True:
+            print(colored("The database user name should only contain letters, numbers, hyphens and dashes.", "yellow"))
+            sys.exit(0)
+        password = ""
+        while len(password.strip()) < 5:
+            password = getpass()
+            if len(password.strip()) < 5:
+                print(colored("Password should contain at least 5 characters.", "yellow"))
+        if len(password.strip()) >= 5:
+            try:
+                sqlexec("CREATE USER {} IDENTIFIED BY '{}'".format(args.user, password))
+                print(colored('MySQL user {} has been successfully created.'.format(args.user)))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
     if args.action == 'createdb':
         try:
             userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
@@ -197,11 +218,11 @@ def main():
         if validators.slug(args.name) is not True:
             print(colored("The database name should only contain letters, numbers, hyphens and dashes.", "yellow"))
             sys.exit(0)
-            
+
         try:
             sqlexec("CREATE DATABASE {}".format(args.name))
             sqlexec("GRANT ALL PRIVILEGES ON {}.*  TO '{}'@'localhost'".format(args.name, args.user))
             sqlexec("FLUSH PRIVILEGES")
-            print(colored("The database {} has been created and all permissions are granted to {} on this database".format(args.name, args.user), "green"))
+            print(colored("The database {} has been created and all permissions are granted to {} on this database.".format(args.name, args.user), "green"))
         except Exception as e:
             print(colored(str(e), "yellow"))

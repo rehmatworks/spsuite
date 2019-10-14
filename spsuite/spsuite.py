@@ -13,6 +13,8 @@ def main():
 
     sp = ServerPilot()
 
+    ignoredbs = ["information_schema", "mysql", "performance_schema", "sys", "sp-admin"]
+
     ap = argparse.ArgumentParser(description='A powerful command line tool to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")
 
@@ -289,7 +291,6 @@ def main():
             print(colored(str(e), 'yellow'))
 
     if args.action == 'dropdb':
-        ignoredbs = ["information_schema", "mysql", "performance_schema", "sys", "sp-admin"]
         if args.name in ignoredbs:
             print(colored("The database {} is protected and cannot be dropped.".format(args.name), "yellow"))
             sys.exit(0)
@@ -304,8 +305,6 @@ def main():
         curr = dbconn.cursor()
         curr.execute("SHOW DATABASES")
         dbsres = curr.fetchall()
-
-        ignoredbs = ["information_schema", "mysql", "performance_schema", "sys", "sp-admin"]
 
         dbs = []
         i = 0

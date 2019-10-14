@@ -148,11 +148,12 @@ def main():
     if args.action == 'changephpall':
         if args.user:
             sp.setuser(args.user)
-            msg = 'All apps owned by {} are now using PHP {}.'.format(args.user, args.php)
+            msg = 'Qualified apps owned by {} are now using PHP {}.'.format(args.user, args.php)
             confirmmsg = 'Do you really want to update PHP version for all apps owned by {} to {}?'.format(args.user, args.php)
         else:
-            msg = 'All apps existing on this server are now using PHP {}.'.format(args.php)
+            msg = 'Qualified apps existing on this server are now using PHP {}.'.format(args.php)
             confirmmsg = 'Do you really want to update PHP version to {} for all apps existing on this server?'.format(args.php)
+        sp.setphp(args.php)
         if doconfirm(confirmmsg):
             try:
                 sp.changephpall()

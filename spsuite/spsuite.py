@@ -272,6 +272,11 @@ def main():
             sqlexec("CREATE DATABASE {}".format(args.name))
             sqlexec("GRANT ALL PRIVILEGES ON {}.*  TO '{}'@'localhost'".format(args.name, args.user))
             sqlexec("FLUSH PRIVILEGES")
+            metainfo = {
+                'name': args.name,
+                'user': args.user
+            }
+            sp.savemeta(metainfo, 'dbmetainfo-{}'.format(args.name))
             print(colored("The database {} has been created and all permissions are granted to {} on this database.".format(args.name, args.user), "green"))
         except Exception as e:
             print(colored(str(e), "yellow"))
@@ -323,9 +328,14 @@ def main():
                 dbtype = 'System'
             else:
                 dbtype = 'General'
-            dbs.append([i, db[0], tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
+            info = sp.getmeta(metainfo, 'dbmetainfo-{}'.format(db[0]))
+            if info:
+                dbuser = info.get('user')
+            else:
+                dbuser = 'N/A'
+            dbs.append([i, db[0], dbuser, tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
         dbconn.close()
-        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Type', 'Size']), 'green'))
+        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'User', 'Tables', 'Type', 'Size']), 'green'))
 
     if args.action == 'listdbusers':
         dbconn = getdbconn()

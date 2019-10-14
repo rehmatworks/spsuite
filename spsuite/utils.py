@@ -151,20 +151,30 @@ class ServerPilot:
             os.path.join(self.phpfpmdir(), '{}.d'.format(self.app))
         ]
 
+    def savemeta(self, data, filename):
+        if not os.path.exists(self.metadir):
+            runcmd('mkdir -p {}'.format(self.metadir))
+        with open(os.path.join(self.metadir, '{}.json'.format(filename)), 'w') as metafile:
+            metafile.write(json.dumps(metainfo))
+
+    def getmeta(self, filename):
+        jsonfile = os.path.join(self.metadir, '{}.json'.format(filename))
+        data = None
+        if os.path.exists(jsonfile):
+            with open(jsonfile) as jsondata:
+                data = json.load(jsondata)
+        return data
+
     def saveappmeta(self):
         if not self.app:
             raise Exception('App name has not been provided.')
-        if not os.path.exists(self.metadir):
-            runcmd('mkdir -p {}'.format(self.metadir))
         metainfo = {
             'name': self.app,
             'user': self.username,
             'php': self.php,
             'domains': self.domains
         }
-
-        with open(os.path.join(self.metadir, '{}.json'.format(self.app)), 'w') as metafile:
-            metafile.write(json.dumps(metainfo))
+        self.savemeta(metainfo, self.app)
 
     def gettpldata(self):
         if len(self.domains) > 1:
@@ -306,12 +316,7 @@ class ServerPilot:
     def appdetails(self):
         if not self.app:
             raise Exception('App name has not been provided.')
-        jsonfile = os.path.join(self.metadir, '{}.json'.format(self.app))
-        data = None
-        if os.path.exists(jsonfile):
-            with open(jsonfile) as jsondata:
-                data = json.load(jsondata)
-        return data
+        return self.getmeta(self.app)
 
     def delapp(self):
         if not self.app:

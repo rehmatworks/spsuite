@@ -310,3 +310,21 @@ class ServerPilot:
             for path in appdirs:
                 rmcontent(path)
             self.reloadservices()
+
+    def allowunknown(self):
+        defaultvhost = os.path.join(self.nginxroot, 'http.d', 'default_server.conf')
+        if os.path.exists(defaultvhost):
+            rmcontent(defaultvhost)
+            self.restartservices()
+        else:
+            raise Exception('Default vhost file exists and unknown domains are already allowed.')
+
+    def denyunknown(self):
+        defaultvhost = os.path.join(self.nginxroot, 'http.d', 'default_server.conf')
+        if not os.path.exists(defaultvhost):
+            defaultvhostdata = parsetpl('defaultserver.tpl')
+            with open(defaultvhost, 'w') as dv:
+                dv.write(defaultvhostdata)
+            self.restartservices()
+        else:
+            raise Exception('Unknown domains are already being denied.')

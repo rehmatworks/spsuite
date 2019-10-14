@@ -25,6 +25,12 @@ def main():
     delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
     delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
 
+    # Deny unknown domains
+    delapp = subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
+
+    # Allow unknown domains
+    delapp = subparsers.add_parser('allowunknown', help='Deny requests from unknown domains.')
+
     args = ap.parse_args()
 
     if len(sys.argv) <= 1:
@@ -83,3 +89,17 @@ def main():
             print(colored('The app {} has been successfully deleted!'.format(args.name), 'green'))
         except Exception as e:
             print(colored(str(e), 'red'))
+
+    if args.action == 'denyunknown':
+        try:
+            sp.denyunknown()
+            print(colored('Unknown domains are now not allowed.', 'green'))
+        catch Exception as e:
+            print(colored(str(e)), 'yellow')
+
+    if args.action == 'allowunknown':
+        try:
+            sp.allowunknown()
+            print(colored('Unknown domains are now allowed to serve the first app.', 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))

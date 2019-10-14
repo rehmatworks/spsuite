@@ -204,7 +204,7 @@ class ServerPilot:
         with open(os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)), 'w') as fpmconf:
             fpmconf.write(fpmconfdata)
 
-    def createuser():
+    def createuser(self):
         runcmd('useradd {}'.format(self.username))
         runcmd('usermod -a -G sp-sysusers {}'.format(self.username, self.username))
         runcmd('usermod --shell /bin/bash {}'.format(self.username))

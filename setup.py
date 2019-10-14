@@ -19,6 +19,8 @@ setup(name='spsuite',
 		'python-nginx',
 		'validators',
 		'termcolor',
-		'tabulate'
-	]
+		'tabulate',
+		'Jinja2'
+	],
+	package_data={'spsuite':['templates/*.tpl']},
 )

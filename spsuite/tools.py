@@ -1,6 +1,8 @@
 import subprocess
 import os
 from datetime import datetime
+from jinja2 import Environment, BaseLoader
+import pkgutil
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -12,3 +14,8 @@ def cdatef(path):
 def mdatef(path):
     ts = int(os.stat(path).st_mtime)
     return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+
+def parsetpl(tpl, data):
+    tplstr = pkgutil.get_data('spsuite', 'templates/{}'.format(tpl))
+    tpl = Environment(loader=BaseLoader).from_string(tplstr)
+    return tpl.render(**data)

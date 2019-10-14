@@ -213,7 +213,8 @@ def main():
                 print(colored("Password should contain at least 5 characters.", "yellow"))
         if len(password.strip()) >= 5:
             try:
-                sqlexec("CREATE USER {} IDENTIFIED BY '{}'".format(args.name, password))
+                sqlexec("CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'".format(args.name, password))
+                sqlexec("FLUSH PRIVILEGES")
                 print(colored('MySQL user {} has been successfully created.'.format(args.name), 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))

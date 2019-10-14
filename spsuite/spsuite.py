@@ -276,7 +276,7 @@ def main():
         except:
             pass
         try:
-            sqlexec("DROP USER {}".format(args.name))
+            sqlexec("DROP USER '{}'@'localhost'".format(args.name))
             print(colored("The database user {} has been dropped.".format(args.name)))
         except Exception as e:
             print(colored(str(e), 'yellow'))

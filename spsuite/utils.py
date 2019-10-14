@@ -71,3 +71,19 @@ class ServerPilot:
             print(colored(tabulate(appsdata, headers=['#', 'App Name', 'SSH User', 'Disk Used', 'Created']), 'green'))
         else:
             print(colored('Looks like you have not created any apps yet!', 'yellow'))
+
+    def createappdirs(self, appname):
+        appdir = self.appdir(appname)
+        os.makedirs(appdir)
+        tpldata = {
+            'appname': appname
+        }
+        # Create NGINX vhost
+        nginxtpldata = parsetpl('nginx.tpl', data=tpldata)
+        with open(self.appnginxconf(appname), 'w') as nginxconf:
+            nginxconf.write(nginxtpldata)
+
+        # Create Apache vhost
+        apachetpldata = parsetpl('apache.tpl', data=tpldata)
+        with open(self.appapacheconf(appname), 'w') as apacheconf:
+            apacheconf.write(apachetpldata)

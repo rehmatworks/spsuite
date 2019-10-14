@@ -1,1 +1,2 @@
-Hi there {{ app }}
+Hi there {{ appname }}
+Another line

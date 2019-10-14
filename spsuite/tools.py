@@ -15,7 +15,7 @@ def mdatef(path):
     ts = int(os.stat(path).st_mtime)
     return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
-def parsetpl(tpl, data):
-    tplstr = pkgutil.get_data('spsuite', 'templates/{}'.format(tpl))
+def parsetpl(tpl, data={}):
+    tplstr = str(pkgutil.get_data('spsuite', 'templates/{}'.format(tpl)).decode('utf-8'))
     tpl = Environment(loader=BaseLoader).from_string(tplstr)
     return tpl.render(**data)

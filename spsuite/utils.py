@@ -315,7 +315,7 @@ class ServerPilot:
         defaultvhost = os.path.join(self.nginxroot, 'http.d', 'default_server.conf')
         if os.path.exists(defaultvhost):
             rmcontent(defaultvhost)
-            self.restartservices()
+            self.reloadservices()
         else:
             raise Exception('Default vhost file exists and unknown domains are already allowed.')
 
@@ -325,6 +325,6 @@ class ServerPilot:
             defaultvhostdata = parsetpl('defaultserver.tpl')
             with open(defaultvhost, 'w') as dv:
                 dv.write(defaultvhostdata)
-            self.restartservices()
+            self.reloadservices()
         else:
             raise Exception('Unknown domains are already being denied.')

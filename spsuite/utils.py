@@ -4,6 +4,7 @@ from .tools import *
 from termcolor import colored
 import nginx
 import json
+import validators
 
 class ServerPilot:
     def __init__(self, username = False, app = False):
@@ -16,6 +17,7 @@ class ServerPilot:
         self.username = username
         self.php = '7.3'
         self.app = app
+        self.domains = []
 
     def setuser(self, username):
         self.username = username
@@ -28,6 +30,16 @@ class ServerPilot:
 
     def setapp(self, app):
         self.app = app
+
+    def setdomains(self, domains):
+        doms = domains.split(',')
+        for dom in doms:
+            if validators.domain(dom) is True:
+                self.domains.append(dom)
+            else:
+                raise Exception('{} is not a valid domain.'.format(dom))
+        if len(self.domains) == 0:
+            raise Exception('You need to provide at least one valid domain name.')
 
     def usrhome(self):
         if not self.username:
@@ -134,11 +146,63 @@ class ServerPilot:
         metainfo = {
             'name': self.app,
             'user': self.username,
-            'php': self.php
+            'php': self.php,
+            'domains': self.domains
         }
 
         with open(os.path.join(self.metadir, '{}.json'.format(self.app)), 'w') as metafile:
             metafile.write(json.dumps(metainfo))
+
+    def gettpldata(self):
+        if len(self.domains) > 1:
+            serveralias = ''
+        else:
+            serveralias = False
+        servername = ''
+        di = 0
+        for dom in self.domains:
+            di += 1
+            if di == 1:
+                servername = dom
+            else:
+                if di > 2:
+                    serveralias += ' '
+                serveralias += dom
+        return {
+            'appname': self.app,
+            'username': self.username,
+            'php': self.php,
+            'servername': servername,
+            'serveralias': serveralias
+        }
+
+    def createnginxvhost(self):
+        data = self.gettpldata()
+        nginxmaindata = parsetpl('nginx-main.tpl')
+        with open(os.path.join(self.nginxroot, self.vhostdir, '{}.d'.format(self.app), 'main.conf'), 'w') as nginxmain:
+            nginxmain.write(nginxmaindata)
+        nginxtpldata = parsetpl('nginx.tpl', data=data)
+        with open(self.appnginxconf(), 'w') as nginxconf:
+            nginxconf.write(nginxtpldata)
+
+    def createapachevhost(self):
+        data = self.gettpldata()
+        apachemaindata = parsetpl('apache-main.tpl')
+        with open(os.path.join(self.apacheroot, self.vhostdir, '{}.d'.format(self.app), 'main.conf'), 'w') as apachemain:
+            apachemain.write(apachemaindata)
+        apachetpldata = parsetpl('apache.tpl', data=data)
+        with open(self.appapacheconf(), 'w') as apacheconf:
+            apacheconf.write(apachetpldata)
+
+    def createfpmpool(self):
+        data = self.gettpldata()
+        fpmconfdir = os.path.join(self.phpfpmdir(), '{}.d'.format(self.app))
+        fpmmaindata = parsetpl('fpm-main.tpl')
+        with open(os.path.join(fpmconfdir, 'main.conf'), 'w') as fpmmain:
+            fpmmain.write(fpmmaindata)
+        fpmconfdata = parsetpl('fpm.tpl', data=data)
+        with open(os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)), 'w') as fpmconf:
+            fpmconf.write(fpmconfdata)
 
     def createapp(self):
         if not self.app:
@@ -153,36 +217,14 @@ class ServerPilot:
         for ad in appdirs:
             runcmd('mkdir -p {}'.format(ad))
 
-        tpldata = {
-            'appname': self.app,
-            'username': self.username,
-            'php': self.php
-        }
-
         # Create NGINX vhost
-        nginxmaindata = parsetpl('nginx-main.tpl')
-        with open(os.path.join(self.nginxroot, self.vhostdir, '{}.d'.format(self.app), 'main.conf'), 'w') as nginxmain:
-            nginxmain.write(nginxmaindata)
-        nginxtpldata = parsetpl('nginx.tpl', data=tpldata)
-        with open(self.appnginxconf(), 'w') as nginxconf:
-            nginxconf.write(nginxtpldata)
+        self.createnginxvhost()
 
         # Create Apache vhost
-        apachemaindata = parsetpl('apache-main.tpl')
-        with open(os.path.join(self.apacheroot, self.vhostdir, '{}.d'.format(self.app), 'main.conf'), 'w') as apachemain:
-            apachemain.write(apachemaindata)
-        apachetpldata = parsetpl('apache.tpl', data=tpldata)
-        with open(self.appapacheconf(), 'w') as apacheconf:
-            apacheconf.write(apachetpldata)
+        self.createapachevhost()
 
         # Create PHP-FPM pools
-        fpmconfdir = os.path.join(self.phpfpmdir(), '{}.d'.format(self.app))
-        fpmmaindata = parsetpl('fpm-main.tpl')
-        with open(os.path.join(fpmconfdir, 'main.conf'), 'w') as fpmmain:
-            fpmmain.write(fpmmaindata)
-        fpmconfdata = parsetpl('fpm.tpl', data=tpldata)
-        with open(os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)), 'w') as fpmconf:
-            fpmconf.write(fpmconfdata)
+        self.createfpmpool()
 
         # Save app meta info
         self.setappmeta()
@@ -192,6 +234,8 @@ class ServerPilot:
         try:
             reloadservices()
         except Exception as e:
+            # self.delapp()
+            reloadservices()
             print(colored(str(e), 'red'))
 
     def appdetails(self):

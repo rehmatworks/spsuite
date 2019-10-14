@@ -4,8 +4,8 @@
 
     ServerAdmin webmaster@
     DocumentRoot ${DOCUMENT_ROOT}
-    ServerName {{ servername }}
-    ServerAlias {{ serveralias }}
+    ServerName {{ servername }}{% if serveralias %}
+    ServerAlias {{ serveralias }}{% endif %}
 
     ErrorLog "/srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_apache.error.log"
     CustomLog "/srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_apache.access.log" common

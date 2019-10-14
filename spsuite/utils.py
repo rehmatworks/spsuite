@@ -389,10 +389,6 @@ class ServerPilot:
         info = self.appdetails()
         if info:
             self.username = info.get('user')
-            existing = info.get('domains').sort()
-            newones = self.domains.sort()
-            if existing == newones:
-                raise Exception('No changes detected!')
             self.createnginxvhost()
             self.createapachevhost()
             self.saveappmeta()

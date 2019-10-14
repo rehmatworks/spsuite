@@ -305,6 +305,7 @@ def main():
             sys.exit(0)
         try:
             sqlexec("DROP DATABASE {}".format(args.name))
+            sp.deletemeta('dbmetainfo-{}'.format(args.name))
             print(colored("The database {} has been dropped.".format(args.name), "green"))
         except Exception as e:
             print(colored(str(e), 'yellow'))

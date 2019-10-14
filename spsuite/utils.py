@@ -165,6 +165,11 @@ class ServerPilot:
                 data = json.load(jsondata)
         return data
 
+    def deletemeta(self, filename):
+        jsonfile = os.path.join(self.metadir, '{}.json'.format(filename))
+        if os.path.exists(jsonfile):
+            rmcontent(jsonfile)
+
     def saveappmeta(self):
         if not self.app:
             raise Exception('App name has not been provided.')

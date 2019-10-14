@@ -368,7 +368,6 @@ class ServerPilot:
         apps = self.findapps()
         if len(apps) > 0:
             for app in apps:
-                print('{} will be deleted.'.format(app[1]))
-                # self.delapp(app[1])
+                self.delapp(app[1])
         else:
             raise Exception('No apps found!')

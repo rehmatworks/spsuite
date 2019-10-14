@@ -10,7 +10,7 @@ setup(name='spsuite',
 	entry_points={
 		'console_scripts': [
 			'spsuite = spsuite.spsuite:main'
-		],
+			],
 	},
 	packages=[
 		'spsuite'
@@ -18,7 +18,7 @@ setup(name='spsuite',
 	install_requires=[
 		'python-nginx',
 		'validators',
-        'termcolor',
-        'tabulate'
+		'termcolor',
+		'tabulate'
 	]
 )

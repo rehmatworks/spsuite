@@ -315,6 +315,6 @@ def main():
             except:
                 tablescount = 0
                 dbsize = 0
-            dbs.append([i, db[0], tablescount, '{} MBs'.format(str(round(dbsize, 2)))])
+            dbs.append([i, db[0], tablescount, '{}MB'.format(str(round(dbsize, 2)))])
         dbconn.close()
         print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Size']), 'green'))

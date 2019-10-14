@@ -3,7 +3,7 @@ from tabulate import tabulate
 from .tools import *
 from termcolor import colored
 
-class Serverpilot:
+class ServerPilot:
     def __init__(self, username = False):
         self.mainroot = '/Users/rehmat/sites/opensource/spsuite/test-data'
         self.usrdataroot = os.path.join(self.mainroot, 'srv', 'users')

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-from .utils import *
+from .utils import ServerPilot
 from termcolor import colored
 import sys
 
@@ -15,7 +15,7 @@ def main():
         ap.print_help()
         sys.exit(0)
 
-    sp = Serverpilot()
+    sp = ServerPilot()
 
     if args.username:
         sp.setuser(args.username)

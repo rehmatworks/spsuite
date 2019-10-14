@@ -356,5 +356,6 @@ class ServerPilot:
                     runcmd('mkdir -p {}'.format(fpmconfmain))
                 self.createfpmpool()
                 self.reloadservices()
+                self.saveappmeta()
         else:
             raise Exception('Provided app name seem to be invalid.')

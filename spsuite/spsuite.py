@@ -81,7 +81,7 @@ def main():
             print(colored(str(e), 'red'))
 
     if args.action == 'deleteapp':
-        if doconfirm("Do you really want to delete the app {} permanently".format(args.name)):
+        if doconfirm("Do you really want to delete the app {} permanently?".format(args.name)):
             sp.setapp(args.name)
             if not sp.isvalidapp():
                 print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'red'))

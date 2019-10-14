@@ -54,5 +54,5 @@ def userexists(username):
 def doconfirm(msg = "Do you really want to perform this irreversible action"):
     answer = ""
     while answer not in ["y", "n"]:
-        answer = input("{} [Y/N]? ".format(msg)).lower()
+        answer = input("{} [Y/N] ".format(msg)).lower()
     return answer == "y"

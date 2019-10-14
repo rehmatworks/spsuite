@@ -381,6 +381,6 @@ class ServerPilot:
                 try:
                     self.changephpversion()
                 except Exception as e:
-                    print(str(e))
+                    pass
         else:
             raise Exception('No apps found!')

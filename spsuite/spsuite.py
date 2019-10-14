@@ -17,7 +17,7 @@ def main():
     # Create app commands
     createapp = subparsers.add_parser('createapp', help='Create a new app.')
     createapp.add_argument('--name', dest='name', help='The name for your new app.', required=True)
-    createapp.add_argument('--user', dest='user', help='The SSH username for your new app.', required=True)
+    createapp.add_argument('--user', dest='user', help='The SSH username for your new app. User will be created if not present.', required=True)
     createapp.add_argument('--php', dest='php', help='PHP version for your new app.', default=False)
     createapp.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 

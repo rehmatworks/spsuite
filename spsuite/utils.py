@@ -138,7 +138,7 @@ class ServerPilot:
             os.path.join(self.phpfpmdir(), '{}.d'.format(self.app))
         ]
 
-    def setappmeta(self):
+    def saveappmeta(self):
         if not self.app:
             raise Exception('App name has not been provided.')
         if not os.path.exists(self.metadir):
@@ -204,12 +204,21 @@ class ServerPilot:
         with open(os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)), 'w') as fpmconf:
             fpmconf.write(fpmconfdata)
 
+    def createuser():
+        runcmd('useradd {}'.format(self.username))
+        runcmd('usermod -a -G sp-sysusers {}'.format(self.username, self.username))
+        runcmd('usermod --shell /bin/bash {}'.format(self.username))
+        runcmd('usermod -d {} {}'.format(self.usrhome(), self.username))
+
     def createapp(self):
         if not self.app:
             raise Exception('App name has not been provided.')
 
         if not self.username:
             raise Exception('SSH user has not been provided.')
+
+        if not userexists(self.username):
+            self.createuser()
 
         # Create app dirs
         appdirs = self.appdirs()
@@ -227,7 +236,7 @@ class ServerPilot:
         self.createfpmpool()
 
         # Save app meta info
-        self.setappmeta()
+        self.saveappmeta()
 
         # Fix app permissions
         # self.fixappperms()

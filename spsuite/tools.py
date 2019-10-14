@@ -4,6 +4,7 @@ from datetime import datetime
 from jinja2 import Environment, BaseLoader
 import pkgutil
 import shutil
+import pwd
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -47,3 +48,10 @@ def reloadservices():
     reloadservice('nginx-sp')
     reloadservice('apache-sp')
     reloadservice('php{}-fpm-sp'.format(self.php))
+
+def userexists(username):
+    try:
+        pwd.getpwnam(username)
+        return True
+    except KeyError:
+        return False

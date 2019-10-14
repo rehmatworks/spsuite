@@ -11,7 +11,7 @@ def main():
 
     sp = ServerPilot()
 
-    ap = argparse.ArgumentParser(description='Command line tools to manage servers provisioned using ServerPilot.io.')
+    ap = argparse.ArgumentParser(description='A powerful command line tool to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")
 
     # List apps
@@ -30,6 +30,11 @@ def main():
     updatedomains.add_argument('--name', dest='name', help='The name of your app for which you want to modify the domains.', required=True)
     updatedomains.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 
+    # Change PHP version
+    changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
+    changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
+    changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
+
     # Delete app
     delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
     delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
@@ -37,11 +42,6 @@ def main():
     # Delete all apps
     delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
     delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
-
-    # Change PHP version
-    changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
-    changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
-    changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
     # Change PHP version for all apps
     changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
@@ -107,7 +107,7 @@ def main():
             print(colored(str(e), 'red'))
             sys.exit(0)
         sp.setapp(args.name)
-        
+
         try:
             sp.updatedomains()
             print(colored('App domains have been updated.', 'green'))

@@ -35,7 +35,7 @@ def main():
 
     # Change PHP version
     changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
-    changephp.add_argument('--name', dest='name', help='The name of the app that you want to change PHP version for.', required=True)
+    changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
     # Deny unknown domains
@@ -43,7 +43,7 @@ def main():
 
     # Allow unknown domains
     subparsers.add_parser('allowunknown', help='Allow requests from unknown domains.')
-    
+
     args = ap.parse_args()
 
     if len(sys.argv) <= 1:
@@ -118,7 +118,7 @@ def main():
 
     if args.action == 'changephp':
         sp.setphp(args.php)
-        sp.setapp(args.name)
+        sp.setapp(args.app)
         try:
             sp.changephpversion()
             print(colored('PHP version for the app {} is changed to {}'.format(args.name, args.php), 'green'))

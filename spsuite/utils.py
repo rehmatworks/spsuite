@@ -386,8 +386,13 @@ class ServerPilot:
             raise Exception('No apps found!')
 
     def updatedomains(self):
-        self.createnginxvhost()
-        self.createapachevhost()
-        self.saveappmeta()
-        reloadservice('nginx-sp')
-        reloadservice('apache-sp')
+        info = self.appdetails()
+        if info:
+            self.username = info.get('user')
+            self.createnginxvhost()
+            self.createapachevhost()
+            self.saveappmeta()
+            reloadservice('nginx-sp')
+            reloadservice('apache-sp')
+        else:
+            raise Exception('The app {} does not seem to exist.'.format(self.app))

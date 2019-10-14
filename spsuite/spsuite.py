@@ -107,10 +107,7 @@ def main():
             print(colored(str(e), 'red'))
             sys.exit(0)
         sp.setapp(args.name)
-        if not sp.isvalidapp():
-            print(colored('The app {} does not seem to exist.'.format(args.name), 'red'))
-            sys.exit(0)
-
+        
         try:
             sp.updatedomains()
             print(colored('App domains have been updated.', 'green'))

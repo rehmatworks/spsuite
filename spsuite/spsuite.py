@@ -328,7 +328,7 @@ def main():
                 dbtype = 'System'
             else:
                 dbtype = 'General'
-            info = sp.getmeta(metainfo, 'dbmetainfo-{}'.format(db[0]))
+            info = sp.getmeta('dbmetainfo-{}'.format(db[0]))
             if info:
                 dbuser = info.get('user')
             else:

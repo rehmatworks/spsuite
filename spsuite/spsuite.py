@@ -5,7 +5,7 @@ from .utils import ServerPilot
 from termcolor import colored
 import sys
 import validators
-from .tools import doconfirm
+from .tools import doconfirm, sqlexec
 
 def main():
 
@@ -35,13 +35,10 @@ def main():
     changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
-    # Delete app
-    delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
-    delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
-
-    # Delete all apps
-    delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
-    delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
+    # Create database
+    createdb = subparsers.add_parser('createdb', help='Create a new MySQL database.')
+    createdb.add_argument('--name', dest='name', help='The name for your new database.', required=True)
+    createdb.add_argument('--user', dest='user', help='MySQL user for the new database.', required=True)
 
     # Change PHP version for all apps
     changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
@@ -53,6 +50,14 @@ def main():
 
     # Allow unknown domains
     subparsers.add_parser('allowunknown', help='Allow requests from unknown domains.')
+
+    # Delete app
+    delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
+    delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
+
+    # Delete all apps
+    delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
+    delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
 
     args = ap.parse_args()
 
@@ -179,3 +184,19 @@ def main():
                 print(colored(msg, 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))
+
+    if args.action == 'createdb':
+        if not sqlexec("SELECT * FROM mysql.user WHERE user={}".format(args.user)):
+            print(colored("The provided user does not exist. Please create it first.", "yellow"))
+            sys.exit(0)
+
+        if validators.slug(args.name) is not True:
+            print(colored("The database name should only contain letters, numbers, hyphens and dashes.", "yellow"))
+            sys.exit(0)
+
+        try:
+            sqlexec("CREATE DATABASE {}".format(args.name))
+            sqlexec("GRANT ALL PRIVILEGES ON {}.*  TO '{}'@'localhost'".format(args.name, args.user))
+            sqlexec("FLUSH PRIVILEGES")
+        except Exception as e:
+            print(colored(str(e), "yellow"))

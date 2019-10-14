@@ -267,6 +267,9 @@ def main():
             print(colored(str(e), "yellow"))
 
     if args.action == 'dropuser':
+        if args.name.lower() == 'root':
+            print(colored("You cannot drop root user.", "yellow"))
+            sys.exit(0)
         try:
             sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(args.name))
         except:

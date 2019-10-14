@@ -33,22 +33,22 @@ def main():
     delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
     delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
 
-    args = ap.parse_args()
-
-    if len(sys.argv) <= 1:
-        ap.print_help()
-        sys.exit(0)
-
     # Change PHP version
     changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
     changephp.add_argument('--name', dest='name', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
     # Deny unknown domains
-    delapp = subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
+    subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
     # Allow unknown domains
-    delapp = subparsers.add_parser('allowunknown', help='Allow requests from unknown domains.')
+    subparsers.add_parser('allowunknown', help='Allow requests from unknown domains.')
+    
+    args = ap.parse_args()
+
+    if len(sys.argv) <= 1:
+        ap.print_help()
+        sys.exit(0)
 
     if args.action == 'listapps':
         if args.user:

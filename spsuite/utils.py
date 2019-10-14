@@ -8,7 +8,7 @@ import validators
 
 class ServerPilot:
     def __init__(self, username = False, app = False):
-        self.mainroot = '/Users/rehmat/sites/opensource/spsuite/test-data'
+        self.mainroot = '/'
         self.usrdataroot = os.path.join(self.mainroot, 'srv', 'users')
         self.nginxroot = os.path.join(self.mainroot, 'etc', 'nginx-sp')
         self.apacheroot = os.path.join(self.mainroot, 'etc', 'apache-sp')

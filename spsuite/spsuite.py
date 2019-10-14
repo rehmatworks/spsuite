@@ -45,6 +45,11 @@ def main():
     changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
+    # Change PHP version for all apps
+    changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
+    changephpall.add_argument('--user', dest='user', help='SSH user to update PHP version for their owned apps. If not provided, all apps will be affected with this change.', required=False)
+    changephpall.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
+
     # Create MySQL user
     sqluser = subparsers.add_parser('createsqluser', help='Create a new MySQL user.')
     sqluser.add_argument('--name', dest='name', help='The name for your new MySQL user.', required=True)
@@ -65,11 +70,6 @@ def main():
     # Delete MySQL database
     dropdb = subparsers.add_parser('dropdb', help='Drop a MySQL database.')
     dropdb.add_argument('--name', dest='name', help='The name of the database that you want to delete.', required=True)
-
-    # Change PHP version for all apps
-    changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
-    changephpall.add_argument('--user', dest='user', help='SSH user to update PHP version for their owned apps. If not provided, all apps will be affected with this change.', required=False)
-    changephpall.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
@@ -149,15 +149,27 @@ def main():
         except Exception as e:
             print(colored(str(e), 'yellow'))
 
-    if args.action == 'deleteapp':
-        if doconfirm("Do you really want to delete the app {} permanently?".format(args.name)):
-            sp.setapp(args.name)
-            if not sp.isvalidapp():
-                print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'yellow'))
-                sys.exit(0)
+    if args.action == 'changephp':
+        sp.setphp(args.php)
+        sp.setapp(args.app)
+        try:
+            sp.changephpversion()
+            print(colored('PHP version for the app {} is changed to {}'.format(args.app, args.php), 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))
+    if args.action == 'changephpall':
+        if args.user:
+            sp.setuser(args.user)
+            msg = 'All apps owned by {} are now using PHP {}.'.format(args.user, args.php)
+            confirmmsg = 'Do you really want to update PHP version for all apps owned by {} to {}?'.format(args.user, args.php)
+        else:
+            msg = 'All apps existing on this server are now using PHP {}.'.format(args.php)
+            confirmmsg = 'Do you really want to update PHP version to {} for all apps existing on this server?'.format(args.php)
+        sp.setphp(args.php)
+        if doconfirm(confirmmsg):
             try:
-                sp.delapp()
-                print(colored('The app {} has been successfully deleted!'.format(args.name), 'green'))
+                sp.changephpall()
+                print(colored(msg, 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))
 
@@ -175,14 +187,17 @@ def main():
         except Exception as e:
             print(colored(str(e), 'yellow'))
 
-    if args.action == 'changephp':
-        sp.setphp(args.php)
-        sp.setapp(args.app)
-        try:
-            sp.changephpversion()
-            print(colored('PHP version for the app {} is changed to {}'.format(args.app, args.php), 'green'))
-        except Exception as e:
-            print(colored(str(e), 'yellow'))
+    if args.action == 'deleteapp':
+        if doconfirm("Do you really want to delete the app {} permanently?".format(args.name)):
+            sp.setapp(args.name)
+            if not sp.isvalidapp():
+                print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'yellow'))
+                sys.exit(0)
+            try:
+                sp.delapp()
+                print(colored('The app {} has been successfully deleted!'.format(args.name), 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
 
     if args.action == 'delallapps':
         if args.user:
@@ -195,22 +210,6 @@ def main():
         if doconfirm(confirmmsg):
             try:
                 sp.deleteallapps()
-                print(colored(msg, 'green'))
-            except Exception as e:
-                print(colored(str(e), 'yellow'))
-
-    if args.action == 'changephpall':
-        if args.user:
-            sp.setuser(args.user)
-            msg = 'All apps owned by {} are now using PHP {}.'.format(args.user, args.php)
-            confirmmsg = 'Do you really want to update PHP version for all apps owned by {} to {}?'.format(args.user, args.php)
-        else:
-            msg = 'All apps existing on this server are now using PHP {}.'.format(args.php)
-            confirmmsg = 'Do you really want to update PHP version to {} for all apps existing on this server?'.format(args.php)
-        sp.setphp(args.php)
-        if doconfirm(confirmmsg):
-            try:
-                sp.changephpall()
                 print(colored(msg, 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))

@@ -321,12 +321,12 @@ def main():
                 tablescount = 0
                 dbsize = 0
             if db[0] in ignoredbs:
-                isprotected = 'System'
+                dbtype = 'System'
             else:
-                isprotected = 'General'
-            dbs.append([i, db[0], tablescount, '{} MB'.format(str(round(dbsize, 2))), isprotected])
+                dbtype = 'General'
+            dbs.append([i, db[0], tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
         dbconn.close()
-        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Size', 'Type']), 'green'))
+        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Type', 'Size']), 'green'))
 
     if args.action == 'listdbusers':
         dbconn = getdbconn()

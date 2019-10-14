@@ -100,6 +100,10 @@ def main():
             print(colored(str(e), 'yellow'))
 
     if args.action == 'createapp':
+        if 'dbmetainfo' in args.name:
+            print(colored('The name {} is protected. Please use a different app name.'.format(args.name), 'yellow'))
+            sys.exit(0)
+
         if validators.slug(args.name) is not True:
             print(colored('App name should only contain letters, dashes/hyphens and numbers.', 'yellow'))
             sys.exit(0)

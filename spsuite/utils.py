@@ -213,6 +213,10 @@ class ServerPilot:
         with open(os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)), 'w') as fpmconf:
             fpmconf.write(fpmconfdata)
 
+    def createindex(self):
+        with open(os.path.join(self.appdir(), 'public', 'index.php'), 'w') as indexf:
+            indexf.write('<?php phpinfo();?>')
+
     def createuser(self):
         runcmd('useradd {}'.format(self.username))
         runcmd('usermod -a -G sp-sysusers {}'.format(self.username, self.username))
@@ -268,6 +272,9 @@ class ServerPilot:
 
         # Save app meta info
         self.saveappmeta()
+
+        # Create index file
+        self.createindex()
 
         # Fix app permissions
         self.fixappperms()

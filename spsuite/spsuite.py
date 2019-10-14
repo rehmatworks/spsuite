@@ -282,8 +282,12 @@ def main():
             print(colored(str(e), 'yellow'))
 
     if args.action == 'dropdb':
+        ignoredbs = ["information_schema", "mysql", "performance_schema", "sys"]
+        if args.name in ignoredbs:
+            print(colored("The database {} is protected and cannot be dropped".format(args.name), "green"))
+            sys.exit(0)
         try:
             sqlexec("DROP DATABASE {}".format(args.name))
-            print(colored("The database {} has been dropped".format(args.name), "green"))
+            print(colored("The database {} has been dropped.".format(args.name), "green"))
         except Exception as e:
             print(colored(str(e), 'yellow'))

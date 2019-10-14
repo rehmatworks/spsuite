@@ -5,8 +5,9 @@ from .utils import ServerPilot
 from termcolor import colored
 import sys
 import validators
-from .tools import doconfirm, sqlexec
+from .tools import *
 from getpass import getpass
+from tabulate import tabulate
 
 def main():
 
@@ -18,6 +19,9 @@ def main():
     # List apps
     listapps = subparsers.add_parser('listapps', help='Show all existing apps.')
     listapps.add_argument('--user', dest='user', help='SSH user to list apps for.', required=False)
+
+    # List databases
+    subparsers.add_parser('listdbs', help='Show all existing databases.')
 
     # Create app
     createapp = subparsers.add_parser('createapp', help='Create a new app.')
@@ -291,3 +295,17 @@ def main():
             print(colored("The database {} has been dropped.".format(args.name), "green"))
         except Exception as e:
             print(colored(str(e), 'yellow'))
+
+    if args.action == 'listdbs':
+        db = getdbconn()
+        curr = db.cursor()
+        curr.execute("SHOW DATABASES")
+        dbsres = curr.fetchall()
+        db.close()
+
+        dbs = []
+        i = 0
+        for db in dbsres:
+            i += 1
+            dbs.append([i, db[0]])
+        print(colored(tabulate(dbs, headers=['#', 'DB Name']), 'green'))

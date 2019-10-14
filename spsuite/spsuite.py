@@ -27,7 +27,7 @@ def main():
 
     # Update domains
     updatedomains = subparsers.add_parser('updatedomains', help='Update an apps\' domains and recreate vhost files.')
-    updatedomains.add_argument('--name', dest='name', help='The name of your app for which you want to modify the domains.', required=True)
+    updatedomains.add_argument('--app', dest='app', help='The name of your app for which you want to modify the domains.', required=True)
     updatedomains.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 
     # Change PHP version
@@ -106,7 +106,7 @@ def main():
         except Exception as e:
             print(colored(str(e), 'red'))
             sys.exit(0)
-        sp.setapp(args.name)
+        sp.setapp(args.app)
 
         try:
             sp.updatedomains()

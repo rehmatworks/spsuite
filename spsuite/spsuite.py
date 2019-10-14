@@ -289,9 +289,9 @@ def main():
             print(colored(str(e), 'yellow'))
 
     if args.action == 'dropdb':
-        ignoredbs = ["information_schema", "mysql", "performance_schema", "sys"]
+        ignoredbs = ["information_schema", "mysql", "performance_schema", "sys", "sp-admin"]
         if args.name in ignoredbs:
-            print(colored("The database {} is protected and cannot be dropped".format(args.name), "yellow"))
+            print(colored("The database {} is protected and cannot be dropped.".format(args.name), "yellow"))
             sys.exit(0)
         try:
             sqlexec("DROP DATABASE {}".format(args.name))
@@ -304,6 +304,8 @@ def main():
         curr = dbconn.cursor()
         curr.execute("SHOW DATABASES")
         dbsres = curr.fetchall()
+
+        ignoredbs = ["information_schema", "mysql", "performance_schema", "sys", "sp-admin"]
 
         dbs = []
         i = 0
@@ -318,9 +320,13 @@ def main():
             except:
                 tablescount = 0
                 dbsize = 0
-            dbs.append([i, db[0], tablescount, '{} MB'.format(str(round(dbsize, 2)))])
+            if db[0] in ignoredbs:
+                isprotected = 'Yes'
+            else:
+                isprotected = 'No'
+            dbs.append([i, db[0], tablescount, '{} MB'.format(str(round(dbsize, 2))), isprotected])
         dbconn.close()
-        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Size']), 'green'))
+        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'Tables', 'Size', 'Protected']), 'green'))
 
     if args.action == 'listdbusers':
         dbconn = getdbconn()

@@ -332,6 +332,6 @@ def main():
         i = 0
         for user in usersres:
             i += 1
-            dbs.append([i, user[0]])
+            users.append([i, user[0]])
         dbconn.close()
-        print(colored(tabulate(dbs, headers=['#', 'User Name']), 'green'))
+        print(colored(tabulate(users, headers=['#', 'User Name']), 'green'))

@@ -359,7 +359,7 @@ class ServerPilot:
                 if not os.path.exists(fpmconfmain):
                     runcmd('mkdir -p {}'.format(fpmconfmain))
                 self.createfpmpool()
-                self.reloadservices()
+                reloadservice('php{}-fpm-sp'.format(self.php))
                 self.saveappmeta()
         else:
             raise Exception('Provided app name seem to be invalid.')

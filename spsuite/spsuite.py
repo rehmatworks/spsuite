@@ -227,10 +227,12 @@ def main():
         if len(password.strip()) >= 5:
             try:
                 sqlexec("UPDATE mysql.user SET authentication_string=PASSWORD('{}') WHERE USER='{}'".format(password, args.user))
+                sqlexec("FLUSH PRIVILEGES")
                 print(colored('MySQL user {}\'s password has been successfully updated.'.format(args.user), 'green'))
             except Exception as e:
                 try:
                     sqlexec("UPDATE mysql.user SET Password=PASSWORD('{}') WHERE USER='{}'".format(password, args.user))
+                    sqlexec("FLUSH PRIVILEGES")
                     print(colored('MySQL user {}\'s password has been successfully updated.'.format(args.user), 'green'))
                 except:
                     print(colored(str(e), 'yellow'))

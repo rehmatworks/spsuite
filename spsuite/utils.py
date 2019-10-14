@@ -372,3 +372,12 @@ class ServerPilot:
                 self.delapp()
         else:
             raise Exception('No apps found!')
+
+    def changephpall(self):
+        apps = self.findapps()
+        if len(apps) > 0:
+            for app in apps:
+                self.app = app[1]
+                self.changephpversion()
+        else:
+            raise Exception('No apps found!')

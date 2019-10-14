@@ -38,6 +38,11 @@ def main():
     changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
+    # Change PHP version for all apps
+    changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
+    changephpall.add_argument('--user', dest='user', help='SSH user to update PHP version for their owned apps. If not provided, all apps will be affected with this change.', required=False)
+    changephpall.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
+
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -136,6 +141,21 @@ def main():
         if doconfirm(confirmmsg):
             try:
                 sp.deleteallapps()
+                print(colored(msg, 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'changephpall':
+        if args.user:
+            sp.setuser(args.user)
+            msg = 'All apps owned by {} are now using PHP {}.'.format(args.user, args.php)
+            confirmmsg = 'Do you really want to update PHP version for all apps owned by {} to {}?'.format(args.user, args.php)
+        else:
+            msg = 'All apps existing on this server are now using PHP {}.'.format(args.php)
+            confirmmsg = 'Do you really want to update PHP version to {} for all apps existing on this server?'.format(args.php)
+        if doconfirm(confirmmsg):
+            try:
+                sp.changephpall()
                 print(colored(msg, 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))

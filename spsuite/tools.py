@@ -44,11 +44,6 @@ def rmcontent(path):
 def getsubstr(s, start, end):
     return (s.split(start))[1].split(end)[0]
 
-def reloadservices():
-    reloadservice('nginx-sp')
-    reloadservice('apache-sp')
-    reloadservice('php{}-fpm-sp'.format(self.php))
-
 def userexists(username):
     try:
         pwd.getpwnam(username)

@@ -210,6 +210,11 @@ class ServerPilot:
         runcmd('usermod --shell /bin/bash {}'.format(self.username))
         runcmd('usermod -d {} {}'.format(self.usrhome(), self.username))
 
+    def reloadservices(self):
+        reloadservice('nginx-sp')
+        reloadservice('apache-sp')
+        reloadservice('php{}-fpm-sp'.format(self.php))
+
     def createapp(self):
         if not self.app:
             raise Exception('App name has not been provided.')
@@ -241,10 +246,10 @@ class ServerPilot:
         # Fix app permissions
         # self.fixappperms()
         try:
-            reloadservices()
+            self.reloadservices()
         except Exception as e:
             # self.delapp()
-            reloadservices()
+            self.reloadservices()
             print(colored(str(e), 'red'))
 
     def appdetails(self):

@@ -186,7 +186,11 @@ def main():
                 print(colored(str(e), 'yellow'))
 
     if args.action == 'createdb':
-        if not sqlexec("SELECT * FROM mysql.user WHERE User = {}".format(args.user)):
+        try:
+            userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
+        except:
+            userexists = False;
+        if not userexists:
             print(colored("The provided user does not exist. Please create it first.", "yellow"))
             sys.exit(0)
 

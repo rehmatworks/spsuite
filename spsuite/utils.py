@@ -213,6 +213,19 @@ class ServerPilot:
         with open(os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)), 'w') as fpmconf:
             fpmconf.write(fpmconfdata)
 
+    def deletefpmpool(self, php):
+        oriphp = self.php
+        self.php = php
+        dirs = [
+            os.path.join(self.phpfpmdir(), '{}.d'.format(self.app)),
+            os.path.join(self.phpfpmdir(), '{}.conf'.format(self.app)),
+        ]
+
+        for dir in dirs:
+            if os.path.exists(dir):
+                rmcontent(dir)
+        self.php oriphp
+
     def createindex(self):
         with open(os.path.join(self.appdir(), 'public', 'index.php'), 'w') as indexf:
             indexf.write('<?php phpinfo();?>')
@@ -328,3 +341,15 @@ class ServerPilot:
             self.reloadservices()
         else:
             raise Exception('Unknown domains are already being denied.')
+
+    def changephpversion(self):
+        info = self.appdetails()
+        if info:
+            if info.get('php') == self.php:
+                raise Exception('The app {} is already using PHP {}'.format(self.app, self.php))
+            else:
+                self.deletefpmpool(info.get('php'))
+                self.createfpmpool()
+                self.reloadservices()
+        else:
+            raise Exception('Provided app name seem to be invalid.')

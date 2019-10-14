@@ -224,6 +224,7 @@ class ServerPilot:
         for dir in dirs:
             if os.path.exists(dir):
                 rmcontent(dir)
+        reloadservice('php{}-fpm-sp'.format(php))
         self.php = oriphp
 
     def createindex(self):

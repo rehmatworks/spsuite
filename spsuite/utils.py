@@ -99,7 +99,7 @@ class ServerPilot:
                             if self.isvalidapp():
                                 i += 1
                                 info = self.appdetails()
-                                appsdata.append([i, self.app, info.get('user'), info.get('php'), du(os.path.join(appsdir, self.app)), mdatef(self.appdir())])
+                                appsdata.append([i, self.app, info.get('user'), ','.join(info.get('domains')), info.get('php'), du(os.path.join(appsdir, self.app)), mdatef(self.appdir())])
         else:
             appsdir = self.appsdir()
             if not os.path.exists(appsdir):
@@ -112,13 +112,13 @@ class ServerPilot:
                     if self.isvalidapp():
                         i += 1
                         info = self.appdetails()
-                        appsdata.append([i, self.app, info.get('user'), info.get('php'), du(self.appdir()), mdatef(self.appdir())])
+                        appsdata.append([i, self.app, info.get('user'), ','.join(info.get('domains')), info.get('php'), du(self.appdir()), mdatef(self.appdir())])
         return appsdata
 
     def listapps(self):
         appsdata = self.findapps()
         if len(appsdata):
-            print(colored(tabulate(appsdata, headers=['#', 'App Name', 'SSH User', 'PHP', 'Disk Used', 'Modified']), 'green'))
+            print(colored(tabulate(appsdata, headers=['#', 'App Name', 'SSH User', 'Domains', 'PHP', 'Disk Used', 'Modified']), 'green'))
         else:
             print(colored('Looks like you have not created any apps yet!', 'yellow'))
 

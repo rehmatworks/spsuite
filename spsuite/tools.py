@@ -5,6 +5,8 @@ from jinja2 import Environment, BaseLoader
 import pkgutil
 import shutil
 import pwd
+import pymysql
+import configparser
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -56,3 +58,12 @@ def doconfirm(msg = "Do you really want to perform this irreversible action"):
     while answer not in ["y", "n"]:
         answer = input("{} [Y/N] ".format(msg)).lower()
     return answer == "y"
+
+def sqlexec(sql):
+    config = configparser.ConfigParser()
+    config.read('/root/.my.cnf')
+    password = config['client']['password']
+    db = pymysql.connect("localhost", "root", password)
+    curr = db.cursor()
+    curr.execute(sql)
+    db.close()

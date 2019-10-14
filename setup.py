@@ -20,7 +20,8 @@ setup(name='spsuite',
 		'validators',
 		'termcolor',
 		'tabulate',
-		'Jinja2'
+		'Jinja2',
+		'pymysql'
 	],
 	package_data={'spsuite':['templates/*.tpl']},
 )

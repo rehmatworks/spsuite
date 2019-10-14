@@ -5,6 +5,7 @@ from .utils import ServerPilot
 from termcolor import colored
 import sys
 import validators
+from .tools import doconfirm
 
 def main():
     ap = argparse.ArgumentParser(description='Command line tools to manage servers provisioned using ServerPilot.io.')
@@ -80,15 +81,16 @@ def main():
             print(colored(str(e), 'red'))
 
     if args.action == 'deleteapp':
-        sp.setapp(args.name)
-        if not sp.isvalidapp():
-            print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'red'))
-            sys.exit(0)
-        try:
-            sp.delapp()
-            print(colored('The app {} has been successfully deleted!'.format(args.name), 'green'))
-        except Exception as e:
-            print(colored(str(e), 'red'))
+        if doconfirm("Do you really want to delete the app {} permanently".format(args.name)):
+            sp.setapp(args.name)
+            if not sp.isvalidapp():
+                print(colored('The app {} you are trying to delete does not exist.'.format(args.name), 'red'))
+                sys.exit(0)
+            try:
+                sp.delapp()
+                print(colored('The app {} has been successfully deleted!'.format(args.name), 'green'))
+            except Exception as e:
+                print(colored(str(e), 'red'))
 
     if args.action == 'denyunknown':
         try:

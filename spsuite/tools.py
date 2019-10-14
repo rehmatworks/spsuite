@@ -50,3 +50,9 @@ def userexists(username):
         return True
     except KeyError:
         return False
+
+def doconfirm(msg = "Do you really want to perform this irreversible action"):
+    answer = ""
+    while answer not in ["y", "n"]:
+        answer = input("{} [Y/N]? ".format(msg)).lower()
+    return answer == "y"

@@ -378,6 +378,9 @@ class ServerPilot:
         if len(apps) > 0:
             for app in apps:
                 self.app = app[1]
-                self.changephpversion()
+                try:
+                    self.changephpversion()
+                except:
+                    pass
         else:
             raise Exception('No apps found!')

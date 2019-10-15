@@ -13,77 +13,68 @@ def main():
 
     sp = ServerPilot()
 
-    ignoredbs = ["information_schema", "mysql", "performance_schema", "sys", "sp-admin"]
+    ignoredbs = ["information_schema", "mysql", "performance_schema", "sys"]
+    ignoresqlusers = ["root", "sp-admin"]
 
-    ap = argparse.ArgumentParser(description='A powerful command line tool to manage servers provisioned using ServerPilot.io.')
+    ap = argparse.ArgumentParser(description='A powerful tool to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")
 
-    # List apps
+    # Apps
     listapps = subparsers.add_parser('listapps', help='Show all existing apps.')
     listapps.add_argument('--user', dest='user', help='SSH user to list apps for.', required=False)
 
-    # List databases
-    subparsers.add_parser('listdbs', help='Show all existing databases.')
-
-    # List database users
-    subparsers.add_parser('listdbusers', help='Show all existing database users.')
-
-    # Create app
     createapp = subparsers.add_parser('createapp', help='Create a new app.')
     createapp.add_argument('--name', dest='name', help='The name for your new app.', required=True)
     createapp.add_argument('--user', dest='user', help='The SSH username for your new app. User will be created if not present.', required=True)
     createapp.add_argument('--php', dest='php', help='PHP version for your new app.', default=False)
     createapp.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 
-    # Update domains
     updatedomains = subparsers.add_parser('updatedomains', help='Update an apps\' domains and recreate vhost files.')
     updatedomains.add_argument('--app', dest='app', help='The name of your app for which you want to modify the domains.', required=True)
     updatedomains.add_argument('--domains', dest='domains', help='Comma-separated domains list, i.e. rehmat.works,www.rehmat.works', required=True)
 
-    # Change PHP version
     changephp = subparsers.add_parser('changephp', help='Change PHP version of an app.')
     changephp.add_argument('--app', dest='app', help='The name of the app that you want to change PHP version for.', required=True)
     changephp.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
-    # Change PHP version for all apps
     changephpall = subparsers.add_parser('changephpall', help='Change PHP version for all apps.')
     changephpall.add_argument('--user', dest='user', help='SSH user to update PHP version for their owned apps. If not provided, all apps will be affected with this change.', required=False)
     changephpall.add_argument('--php', dest='php', help='PHP version (Available: {}).'.format(', '.join(sp.availphpversions())), choices=sp.availphpversions(), required=True)
 
-    # Create MySQL user
+    delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
+    delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
+
+    delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
+    delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
+
+    # MySQL users
+    subparsers.add_parser('listdbusers', help='Show all existing database users.')
     sqluser = subparsers.add_parser('createsqluser', help='Create a new MySQL user.')
     sqluser.add_argument('--name', dest='name', help='The name for your new MySQL user.', required=True)
 
-    # Update MySQL user password
     sqluserpass = subparsers.add_parser('updatesqlpassword', help='Update any MySQL user\'s password.')
     sqluserpass.add_argument('--user', dest='user', help='The name for MySQL user for which you want to update the password.', required=True)
 
-    # Create MySQL database
+    deldbuser = subparsers.add_parser('dropuser', help='Drop a MySQL user.')
+    deldbuser.add_argument('--name', dest='name', help='The name of the database user that you want to delete.', required=True)
+
+    # MySQL database
+    subparsers.add_parser('listdbs', help='Show all existing databases.')
+
     createdb = subparsers.add_parser('createdb', help='Create a new MySQL database.')
     createdb.add_argument('--name', dest='name', help='The name for your new database.', required=True)
     createdb.add_argument('--user', dest='user', help='MySQL user for the new database.', required=True)
 
-    # Delete MySQL database user
-    deldbuser = subparsers.add_parser('dropuser', help='Drop a MySQL user.')
-    deldbuser.add_argument('--name', dest='name', help='The name of the database user that you want to delete.', required=True)
-
     # Delete MySQL database
     dropdb = subparsers.add_parser('dropdb', help='Drop a MySQL database.')
     dropdb.add_argument('--name', dest='name', help='The name of the database that you want to delete.', required=True)
+    subparsers.add_parser('dropalldbs', help='Drop all databases except system databases ({}).'.format(', '.join(ignoredbs)))
 
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
     # Allow unknown domains
     subparsers.add_parser('allowunknown', help='Allow requests from unknown domains.')
-
-    # Delete app
-    delapp = subparsers.add_parser('deleteapp', help='Delete an app permanently.')
-    delapp.add_argument('--name', dest='name', help='The name of the app that you want to delete.', required=True)
-
-    # Delete all apps
-    delapps = subparsers.add_parser('delallapps', help='Delete all apps permanently.')
-    delapps.add_argument('--user', dest='user', help='SSH user to delete their owned apps. If not provided, all apps from all users will be deleted.', required=False)
 
     args = ap.parse_args()
 
@@ -285,8 +276,8 @@ def main():
             print(colored(str(e), "yellow"))
 
     if args.action == 'dropuser':
-        if args.name.lower() == 'root':
-            print(colored("You cannot drop root user.", "yellow"))
+        if args.name.lower() in ignoresqlusers:
+            print(colored("You cannot drop the system user {}.".format(args.name), "yellow"))
             sys.exit(0)
         try:
             sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(args.name))
@@ -310,47 +301,75 @@ def main():
             print(colored(str(e), 'yellow'))
 
     if args.action == 'listdbs':
-        dbconn = getdbconn()
-        curr = dbconn.cursor()
-        curr.execute("SHOW DATABASES")
-        dbsres = curr.fetchall()
+        try:
+            dbconn = getdbconn()
+            curr = dbconn.cursor()
+            curr.execute("SHOW DATABASES")
+            dbsres = curr.fetchall()
 
-        dbs = []
-        i = 0
-        for db in dbsres:
-            i += 1
-            try:
-                curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
-                tablescount = curr.rowcount
-                curr.execute("SELECT SUM(data_length + index_length) / 1024 / 1024 AS 'size' FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
-                sizeres = curr.fetchone()
-                dbsize = float(sizeres[0])
-            except:
-                tablescount = 0
-                dbsize = 0
-            if db[0] in ignoredbs:
-                dbtype = 'System'
-            else:
-                dbtype = 'General'
-            info = sp.getmeta('dbmetainfo-{}'.format(db[0]))
-            if info:
-                dbuser = info.get('user')
-            else:
-                dbuser = 'N/A'
-            dbs.append([i, db[0], dbuser, tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
-        dbconn.close()
-        print(colored(tabulate(dbs, headers=['#', 'DB Name', 'User', 'Tables', 'Type', 'Size']), 'green'))
+            dbs = []
+            i = 0
+            for db in dbsres:
+                i += 1
+                try:
+                    curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
+                    tablescount = curr.rowcount
+                    curr.execute("SELECT SUM(data_length + index_length) / 1024 / 1024 AS 'size' FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
+                    sizeres = curr.fetchone()
+                    dbsize = float(sizeres[0])
+                except:
+                    tablescount = 0
+                    dbsize = 0
+                if db[0] in ignoredbs:
+                    dbtype = 'System'
+                else:
+                    dbtype = 'General'
+                info = sp.getmeta('dbmetainfo-{}'.format(db[0]))
+                if info:
+                    dbuser = info.get('user')
+                else:
+                    dbuser = 'N/A'
+                dbs.append([i, db[0], dbuser, tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
+            dbconn.close()
+            print(colored(tabulate(dbs, headers=['#', 'DB Name', 'User', 'Tables', 'Type', 'Size']), 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))
 
     if args.action == 'listdbusers':
-        dbconn = getdbconn()
-        curr = dbconn.cursor()
-        curr.execute("SELECT User FROM mysql.user")
-        usersres = curr.fetchall()
+        try:
+            dbconn = getdbconn()
+            curr = dbconn.cursor()
+            curr.execute("SELECT User FROM mysql.user")
+            usersres = curr.fetchall()
 
-        users = []
-        i = 0
-        for user in usersres:
-            i += 1
-            users.append([i, user[0]])
-        dbconn.close()
-        print(colored(tabulate(users, headers=['#', 'User Name']), 'green'))
+            users = []
+            i = 0
+            for user in usersres:
+                i += 1
+                users.append([i, user[0]])
+            dbconn.close()
+            print(colored(tabulate(users, headers=['#', 'User Name']), 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))
+
+    if args.action == 'dropalldbs':
+        if doconfirm('Do you really want to permanently drop all databases on this server?'):
+            try:
+                dbconn = getdbconn()
+                curr = dbconn.cursor()
+                curr.execute("SHOW DATABASES")
+                dbsres = curr.fetchall()
+                dbs = []
+                for db in dbsres:
+                    try:
+                        dbname = db[0]
+                        if dbname in ignoredbs:
+                            print(colored("The database {} is protected and skipped.".format(dbname), "yellow"))
+                        else:
+                            sqlexec("DROP DATABASE {}".format(dbname))
+                            sp.deletemeta('dbmetainfo-{}'.format(dbname))
+                            print(colored("The database {} has been dropped.".format(dbname), "green"))
+                    except:
+                        print(colored('{} cannot be dropped for some unknown reason.'.format(dbname), 'yellow'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))

@@ -61,11 +61,14 @@ def doconfirm(msg = "Do you really want to perform this irreversible action"):
     return answer == "y"
 
 def getdbconn():
-    config = configparser.ConfigParser()
-    config.read('/root/.my.cnf')
-    password = config['client']['password']
-    db = pymysql.connect("localhost", "root", password)
-    return db
+    try:
+        config = configparser.ConfigParser()
+        config.read('/root/.my.cnf')
+        password = config['client']['password']
+        db = pymysql.connect("localhost", "root", password)
+        return db
+    except:
+        raise Exception('MySQL connectivity error. Ensure that /root/.my.cnf contains correct login info.')
 
 def sqlexec(sql):
     with warnings.catch_warnings():

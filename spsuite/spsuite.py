@@ -267,25 +267,26 @@ def main():
             print(colored(str(e), "yellow"))
 
     if args.action == 'dropuser':
-        if args.name.lower() in ignoresqlusers:
-            print(colored("You cannot drop the system user {}.".format(args.name), "yellow"))
-            sys.exit(0)
-        try:
-            dropsqluser(args.name)
-            print(colored("The database user {} has been dropped.".format(args.name), "green"))
-        except Exception as e:
-            print(colored(str(e), 'yellow'))
+        if doconfirm("Do you really want to drop the user {}?".format(args.name)):
+            if args.name.lower() in ignoresqlusers:
+                print(colored("You cannot drop the system user {}.".format(args.name), "yellow"))
+                sys.exit(0)
+            try:
+                dropsqluser(args.name)
+                print(colored("The database user {} has been dropped.".format(args.name), "green"))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
 
     if args.action == 'dropdb':
-        if args.name in ignoredbs:
-            print(colored("The database {} is protected and cannot be dropped.".format(args.name), "yellow"))
-            sys.exit(0)
-        try:
-            sqlexec("DROP DATABASE {}".format(args.name))
-            sp.deletemeta('dbmetainfo-{}'.format(args.name))
-            print(colored("The database {} has been dropped.".format(args.name), "green"))
-        except Exception as e:
-            print(colored(str(e), 'yellow'))
+        if doconfirm("Do you really want to drop the database {}?".format(args.name)):
+            if args.name in ignoredbs:
+                print(colored("The database {} is protected and cannot be dropped.".format(args.name), "yellow"))
+                sys.exit(0)
+            try:
+                dropdb(args.name)
+                print(colored("The database {} has been dropped.".format(args.name), "green"))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
 
     if args.action == 'listdbs':
         try:
@@ -361,8 +362,7 @@ def main():
                         if dbname in ignoredbs:
                             print(colored("The database {} is protected and skipped.".format(dbname), "yellow"))
                         else:
-                            sqlexec("DROP DATABASE {}".format(dbname))
-                            sp.deletemeta('dbmetainfo-{}'.format(dbname))
+                            dropdb(dbname)
                             print(colored("The database {} has been dropped.".format(dbname), "green"))
                     except:
                         print(colored('{} cannot be dropped for some unknown reason.'.format(dbname), 'yellow'))

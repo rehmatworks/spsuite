@@ -11,6 +11,7 @@ import warnings
 import validators
 from getpass import getpass
 from termcolor import colored
+from utils import ServerPilot
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -106,3 +107,8 @@ def createsqluser(username):
     if len(password.strip()) >= 5:
         sqlexec("CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'".format(username, password))
         sqlexec("FLUSH PRIVILEGES")
+
+def dropdb(dbname):
+    sp = ServerPilot()
+    sqlexec("DROP DATABASE {}".format(dbname))
+    sp.deletemeta('dbmetainfo-{}'.format(dbname))

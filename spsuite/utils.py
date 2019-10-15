@@ -442,6 +442,7 @@ class ServerPilot:
         curr = dbconn.cursor()
         curr.execute("SHOW DATABASES")
         dbsres = curr.fetchall()
+        dbconn.close()
         dbs = []
         for db in dbsres:
             dbs.append(db[0])

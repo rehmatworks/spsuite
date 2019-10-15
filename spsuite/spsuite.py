@@ -350,9 +350,13 @@ def main():
             i = 0
             for user in usersres:
                 i += 1
-                users.append([i, user[0]])
+                if user[0] in ignoresqlusers:
+                    usrtype = 'System User'
+                else:
+                    usrtype = 'General User'
+                users.append([i, user[0], usrtype])
             dbconn.close()
-            print(colored(tabulate(users, headers=['#', 'User Name']), 'green'))
+            print(colored(tabulate(users, headers=['#', 'User Name', 'Type']), 'green'))
         except Exception as e:
             print(colored(str(e), 'yellow'))
 

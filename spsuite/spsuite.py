@@ -290,37 +290,35 @@ def main():
 
     if args.action == 'listdbs':
         try:
+            dbslist = sp.dbslist()
             dbconn = getdbconn()
             curr = dbconn.cursor()
-            curr.execute("SHOW DATABASES")
-            dbsres = curr.fetchall()
-
             dbs = []
             i = 0
-            for db in dbsres:
+            for db in dbslist:
                 i += 1
                 try:
-                    curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
+                    curr.execute("SELECT table_schema FROM information_schema.tables WHERE table_schema = '{}'".format(str(db).strip()))
                     tablescount = curr.rowcount
-                    curr.execute("SELECT SUM(data_length + index_length) / 1024 / 1024 AS 'size' FROM information_schema.tables WHERE table_schema = '{}'".format(str(db[0]).strip()))
+                    curr.execute("SELECT SUM(data_length + index_length) / 1024 / 1024 AS 'size' FROM information_schema.tables WHERE table_schema = '{}'".format(str(db).strip()))
                     sizeres = curr.fetchone()
                     dbsize = float(sizeres[0])
                 except:
                     tablescount = 0
                     dbsize = 0
-                if db[0] in ignoredbs:
+                if db in ignoredbs:
                     dbtype = 'System'
                 else:
                     dbtype = 'General'
-                info = sp.getmeta('dbmetainfo-{}'.format(db[0]))
+                info = sp.getmeta('dbmetainfo-{}'.format(db))
                 if info:
                     dbuser = info.get('user')
                 else:
-                    if db[0] in ignoredbs:
+                    if db in ignoredbs:
                         dbuser = 'root'
                     else:
                         dbuser = 'N/A'
-                dbs.append([i, db[0], dbuser, tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
+                dbs.append([i, db, dbuser, tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
             dbconn.close()
             print(colored(tabulate(dbs, headers=['#', 'DB Name', 'User', 'Tables', 'Type', 'Size']), 'green'))
         except Exception as e:
@@ -328,20 +326,16 @@ def main():
 
     if args.action == 'listdbusers':
         try:
-            dbconn = getdbconn()
-            curr = dbconn.cursor()
-            curr.execute("SELECT User FROM mysql.user")
-            usersres = curr.fetchall()
-
-            users = []
+            dbusers = sp.dbuserslist()
             i = 0
-            for user in usersres:
+            users = []
+            for user in dbusers:
                 i += 1
-                if user[0] in ignoresqlusers:
+                if user in ignoresqlusers:
                     usrtype = 'System User'
                 else:
                     usrtype = 'General User'
-                users.append([i, user[0], usrtype])
+                users.append([i, user, usrtype])
             dbconn.close()
             print(colored(tabulate(users, headers=['#', 'User Name', 'Type']), 'green'))
         except Exception as e:
@@ -350,15 +344,9 @@ def main():
     if args.action == 'dropalldbs':
         if doconfirm('Do you really want to permanently drop all databases on this server?'):
             try:
-                dbconn = getdbconn()
-                curr = dbconn.cursor()
-                curr.execute("SHOW DATABASES")
-                dbsres = curr.fetchall()
-                dbconn.close()
-                dbs = []
-                for db in dbsres:
+                dbs = sp.dbslist()
+                for dbname in dbs:
                     try:
-                        dbname = db[0]
                         if dbname in ignoredbs:
                             print(colored("The database {} is protected and skipped.".format(dbname), "yellow"))
                         else:
@@ -372,14 +360,9 @@ def main():
     if args.action == 'dropallsqlusers':
         if doconfirm('Do you really want to permanently drop all MySQL users on this server?'):
             try:
-                dbconn = getdbconn()
-                curr = dbconn.cursor()
-                curr.execute("SELECT User FROM mysql.user")
-                usersres = curr.fetchall()
-                dbconn.close()
-                for user in usersres:
+                dbusers = sp.dbuserslist()
+                for username in dbusers:
                     try:
-                        username = user[0]
                         if username in ignoresqlusers:
                             print(colored("The user {} is protected and skipped.".format(username), "yellow"))
                         else:

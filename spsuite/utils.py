@@ -436,3 +436,24 @@ class ServerPilot:
     def dropdb(self, db):
         sqlexec("DROP DATABASE {}".format(db))
         self.deletemeta('dbmetainfo-{}'.format(db))
+
+    def dbslist(self):
+        dbconn = getdbconn()
+        curr = dbconn.cursor()
+        curr.execute("SHOW DATABASES")
+        dbsres = curr.fetchall()
+        dbs = []
+        for db in dbsres:
+            dbs.append(db[0])
+        return dbs
+
+    def dbuserslist(self):
+        dbconn = getdbconn()
+        curr = dbconn.cursor()
+        curr.execute("SELECT User FROM mysql.user")
+        usersres = curr.fetchall()
+        dbconn.close()
+        users = []
+        for user in usersres:
+            users.append(user[0])
+        return users

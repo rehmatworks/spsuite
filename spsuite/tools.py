@@ -8,6 +8,7 @@ import pwd
 import pymysql
 import configparser
 import warnings
+import validators
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -85,3 +86,21 @@ def dropsqluser(user):
     except:
         pass
     sqlexec("DROP USER '{}'@'localhost'".format(user))
+
+def createsqluser(username):
+    if validators.slug(username) is not True:
+        raise Exception("The database user contains unsupported characters.")
+    try:
+        userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(username))
+    except:
+        userexists = False
+    if userexists:
+        raise Exception('A MySQL user with username {} already exists.'.format(username))
+    password = ""
+    while len(password.strip()) < 5:
+        password = getpass()
+        if len(password.strip()) < 5:
+            print(colored("Password should contain at least 5 characters.", "yellow"))
+    if len(password.strip()) >= 5:
+        sqlexec("CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'".format(username, password))
+        sqlexec("FLUSH PRIVILEGES")

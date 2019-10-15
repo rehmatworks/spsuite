@@ -207,27 +207,17 @@ def main():
                 print(colored(str(e), 'yellow'))
 
     if args.action == 'createsqluser':
-        if validators.slug(args.name) is not True:
-            print(colored("The database user name should only contain letters, numbers, hyphens and dashes.", "yellow"))
-            sys.exit(0)
-        password = ""
-        while len(password.strip()) < 5:
-            password = getpass()
-            if len(password.strip()) < 5:
-                print(colored("Password should contain at least 5 characters.", "yellow"))
-        if len(password.strip()) >= 5:
-            try:
-                sqlexec("CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'".format(args.name, password))
-                sqlexec("FLUSH PRIVILEGES")
-                print(colored('MySQL user {} has been successfully created.'.format(args.name), 'green'))
-            except Exception as e:
-                print(colored(str(e), 'yellow'))
+        try:
+            createsqluser(args.name)
+            print(colored('MySQL user {} has been successfully created.'.format(args.name), 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))
 
     if args.action == 'updatesqlpassword':
         try:
             userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
         except:
-            userexists = False;
+            userexists = False
         if not userexists:
             print(colored("User {} does not exist.".format(args.user), "yellow"))
             sys.exit(0)

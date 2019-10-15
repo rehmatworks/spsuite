@@ -78,3 +78,10 @@ def sqlexec(sql):
         res = curr.execute(sql)
         db.close()
         return res  > 0
+
+def dropsqluser(user):
+    try:
+        sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(user))
+    except:
+        pass
+    sqlexec("DROP USER '{}'@'localhost'".format(user))

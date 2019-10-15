@@ -281,11 +281,7 @@ def main():
             print(colored("You cannot drop the system user {}.".format(args.name), "yellow"))
             sys.exit(0)
         try:
-            sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(args.name))
-        except:
-            pass
-        try:
-            sqlexec("DROP USER '{}'@'localhost'".format(args.name))
+            dropsqluser(args.name)
             print(colored("The database user {} has been dropped.".format(args.name), "green"))
         except Exception as e:
             print(colored(str(e), 'yellow'))
@@ -398,11 +394,7 @@ def main():
                             print(colored("The user {} is protected and skipped.".format(username), "yellow"))
                         else:
                             try:
-                                sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(username))
-                            except:
-                                pass
-                            try:
-                                sqlexec("DROP USER '{}'@'localhost'".format(username))
+                                dropsqluser(username)
                                 print(colored("The database user {} has been dropped.".format(username), "green"))
                             except Exception as e:
                                 print(colored(str(e), 'yellow'))

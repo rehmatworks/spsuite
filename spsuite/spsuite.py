@@ -328,7 +328,10 @@ def main():
                 if info:
                     dbuser = info.get('user')
                 else:
-                    dbuser = 'N/A'
+                    if db[0] in ignoredbs:
+                        dbuser = 'root'
+                    else:
+                        dbuser = 'N/A'
                 dbs.append([i, db[0], dbuser, tablescount, dbtype, '{} MB'.format(str(round(dbsize, 2)))])
             dbconn.close()
             print(colored(tabulate(dbs, headers=['#', 'DB Name', 'User', 'Tables', 'Type', 'Size']), 'green'))

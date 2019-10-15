@@ -5,6 +5,7 @@ from termcolor import colored
 import nginx
 import json
 import validators
+from getpass import getpass
 
 class ServerPilot:
     def __init__(self, username = False, app = False):
@@ -406,3 +407,32 @@ class ServerPilot:
             reloadservice('apache-sp')
         else:
             raise Exception('The app {} does not seem to exist.'.format(self.app))
+
+    def dropsqluser(self, user):
+        try:
+            sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(user))
+        except:
+            pass
+        sqlexec("DROP USER '{}'@'localhost'".format(user))
+
+    def createsqluser(self, user):
+        if validators.slug(user) is not True:
+            raise Exception("The database user contains unsupported characters.")
+        try:
+            userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(user))
+        except:
+            userexists = False
+        if userexists:
+            raise Exception('A MySQL user with username {} already exists.'.format(user))
+        password = ""
+        while len(password.strip()) < 5:
+            password = getpass()
+            if len(password.strip()) < 5:
+                print(colored("Password should contain at least 5 characters.", "yellow"))
+        if len(password.strip()) >= 5:
+            sqlexec("CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'".format(user, password))
+            sqlexec("FLUSH PRIVILEGES")
+
+    def dropdb(self, db):
+        sqlexec("DROP DATABASE {}".format(db))
+        self.deletemeta('dbmetainfo-{}'.format(db))

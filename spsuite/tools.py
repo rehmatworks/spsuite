@@ -8,10 +8,6 @@ import pwd
 import pymysql
 import configparser
 import warnings
-import validators
-from getpass import getpass
-from termcolor import colored
-from .utils import ServerPilot
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
@@ -82,33 +78,3 @@ def sqlexec(sql):
         res = curr.execute(sql)
         db.close()
         return res  > 0
-
-def dropsqluser(user):
-    try:
-        sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(user))
-    except:
-        pass
-    sqlexec("DROP USER '{}'@'localhost'".format(user))
-
-def createsqluser(username):
-    if validators.slug(username) is not True:
-        raise Exception("The database user contains unsupported characters.")
-    try:
-        userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(username))
-    except:
-        userexists = False
-    if userexists:
-        raise Exception('A MySQL user with username {} already exists.'.format(username))
-    password = ""
-    while len(password.strip()) < 5:
-        password = getpass()
-        if len(password.strip()) < 5:
-            print(colored("Password should contain at least 5 characters.", "yellow"))
-    if len(password.strip()) >= 5:
-        sqlexec("CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'".format(username, password))
-        sqlexec("FLUSH PRIVILEGES")
-
-def dropdb(dbname):
-    sp = ServerPilot()
-    sqlexec("DROP DATABASE {}".format(dbname))
-    sp.deletemeta('dbmetainfo-{}'.format(dbname))

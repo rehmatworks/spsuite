@@ -208,7 +208,7 @@ def main():
 
     if args.action == 'createsqluser':
         try:
-            createsqluser(args.name)
+            sp.createsqluser(args.name)
             print(colored('MySQL user {} has been successfully created.'.format(args.name), 'green'))
         except Exception as e:
             print(colored(str(e), 'yellow'))
@@ -272,7 +272,7 @@ def main():
                 print(colored("You cannot drop the system user {}.".format(args.name), "yellow"))
                 sys.exit(0)
             try:
-                dropsqluser(args.name)
+                sp.dropsqluser(args.name)
                 print(colored("The database user {} has been dropped.".format(args.name), "green"))
             except Exception as e:
                 print(colored(str(e), 'yellow'))
@@ -283,7 +283,7 @@ def main():
                 print(colored("The database {} is protected and cannot be dropped.".format(args.name), "yellow"))
                 sys.exit(0)
             try:
-                dropdb(args.name)
+                sp.dropdb(args.name)
                 print(colored("The database {} has been dropped.".format(args.name), "green"))
             except Exception as e:
                 print(colored(str(e), 'yellow'))
@@ -362,7 +362,7 @@ def main():
                         if dbname in ignoredbs:
                             print(colored("The database {} is protected and skipped.".format(dbname), "yellow"))
                         else:
-                            dropdb(dbname)
+                            sp.dropdb(dbname)
                             print(colored("The database {} has been dropped.".format(dbname), "green"))
                     except:
                         print(colored('{} cannot be dropped for some unknown reason.'.format(dbname), 'yellow'))
@@ -384,7 +384,7 @@ def main():
                             print(colored("The user {} is protected and skipped.".format(username), "yellow"))
                         else:
                             try:
-                                dropsqluser(username)
+                                sp.dropsqluser(username)
                                 print(colored("The database user {} has been dropped.".format(username), "green"))
                             except Exception as e:
                                 print(colored(str(e), 'yellow'))

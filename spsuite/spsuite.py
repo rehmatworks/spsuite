@@ -58,6 +58,8 @@ def main():
     deldbuser = subparsers.add_parser('dropuser', help='Drop a MySQL user.')
     deldbuser.add_argument('--name', dest='name', help='The name of the database user that you want to delete.', required=True)
 
+    subparsers.add_parser('dropallsqlusers', help='Drop all MySQL users except system users ({}).'.format(', '.join(ignoresqlusers)))
+
     # MySQL database
     subparsers.add_parser('listdbs', help='Show all existing databases.')
 
@@ -65,7 +67,6 @@ def main():
     createdb.add_argument('--name', dest='name', help='The name for your new database.', required=True)
     createdb.add_argument('--user', dest='user', help='MySQL user for the new database.', required=True)
 
-    # Delete MySQL database
     dropdb = subparsers.add_parser('dropdb', help='Drop a MySQL database.')
     dropdb.add_argument('--name', dest='name', help='The name of the database that you want to delete.', required=True)
     subparsers.add_parser('dropalldbs', help='Drop all databases except system databases ({}).'.format(', '.join(ignoredbs)))
@@ -362,6 +363,7 @@ def main():
                 curr = dbconn.cursor()
                 curr.execute("SHOW DATABASES")
                 dbsres = curr.fetchall()
+                dbconn.close()
                 dbs = []
                 for db in dbsres:
                     try:
@@ -374,5 +376,33 @@ def main():
                             print(colored("The database {} has been dropped.".format(dbname), "green"))
                     except:
                         print(colored('{} cannot be dropped for some unknown reason.'.format(dbname), 'yellow'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'dropallsqlusers':
+        if doconfirm('Do you really want to permanently drop all MySQL users on this server?'):
+            try:
+                dbconn = getdbconn()
+                curr = dbconn.cursor()
+                curr.execute("SELECT User FROM mysql.user")
+                usersres = curr.fetchall()
+                dbconn.close()
+                for user in usersres:
+                    try:
+                        username = user[0]
+                        if username in ignoresqlusers:
+                            print(colored("The user {} is protected and skipped.".format(username), "yellow"))
+                        else:
+                            try:
+                                sqlexec("REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{}'@'localhost'".format(username))
+                            except:
+                                pass
+                            try:
+                                sqlexec("DROP USER '{}'@'localhost'".format(username))
+                                print(colored("The database user {} has been dropped.".format(username), "green"))
+                            except Exception as e:
+                                print(colored(str(e), 'yellow'))
+                    except:
+                        print(colored('{} cannot be dropped for some unknown reason.'.format(username), 'yellow'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))

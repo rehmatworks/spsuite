@@ -11,7 +11,7 @@ import warnings
 import validators
 from getpass import getpass
 from termcolor import colored
-from utils import ServerPilot
+from .utils import ServerPilot
 
 def du(path):
     return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')

@@ -14,7 +14,7 @@ def main():
     sp = ServerPilot()
 
     ignoredbs = ["information_schema", "mysql", "performance_schema", "sys"]
-    ignoresqlusers = ["root", "sp-admin"]
+    ignoresqlusers = ["root", "sp-admin", "debian-sys-maint", "mysql.session", "mysql.sys"]
 
     ap = argparse.ArgumentParser(description='A powerful tool to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")

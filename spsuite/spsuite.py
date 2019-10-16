@@ -220,10 +220,10 @@ def main():
 
     if args.action == 'updatesqlpassword':
         try:
-            userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
+            dbuexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
         except:
-            userexists = False
-        if not userexists:
+            dbuexists = False
+        if not dbuexists:
             print(colored("User {} does not exist.".format(args.user), "yellow"))
             sys.exit(0)
 
@@ -247,10 +247,10 @@ def main():
 
     if args.action == 'createdb':
         try:
-            userexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
+            dbuexists = sqlexec("SELECT * FROM mysql.user WHERE User = '{}'".format(args.user))
         except:
-            userexists = False;
-        if not userexists:
+            dbuexists = False;
+        if not dbuexists:
             print(colored("User {} does not exist. Please create it first.".format(args.user), "yellow"))
             sys.exit(0)
 
@@ -390,7 +390,8 @@ def main():
             sys.exit(0)
 
         try:
-            sp.createuser(args.username)
+            sp.username = args.username
+            sp.createuser()
             print(colored('SSH user {} has been successfully created.'.format(args.username)))
         except Exception as e:
             print(colored(str(e), 'yellow'))

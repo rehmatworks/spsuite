@@ -19,6 +19,11 @@ def main():
     ap = argparse.ArgumentParser(description='A powerful tool to manage servers provisioned using ServerPilot.io.')
     subparsers = ap.add_subparsers(dest="action")
 
+    # SSH Users
+    subparsers.add_parser('listsysusers', help='Show all SSH users existing on this server.')
+    sysuser = subparsers.add_parser('createsysuser', help='Create a new SSH user.')
+    sysuser.add_argument('--username', dest='username', help='Username for your new SSH user.')
+
     # Apps
     listapps = subparsers.add_parser('listapps', help='Show all existing apps.')
     listapps.add_argument('--user', dest='user', help='SSH user to list apps for.', required=False)
@@ -374,3 +379,18 @@ def main():
                         print(colored('{} cannot be dropped for some unknown reason.'.format(username), 'yellow'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))
+
+    if args.action == 'createsysuser':
+        if validators.slug(args.username) is not True:
+            print(colored('SSH username contains invalid characters.', 'yellow'))
+            sys.exit(0)
+
+        if userexists(args.username):
+            print(colored('An SSH user with this username already exists.', 'yellow'))
+            sys.exit(0)
+
+        try:
+            sp.createuser(args.username)
+            print(colored('SSH user {} has been successfully created.'.format(args.username)))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))

@@ -498,3 +498,15 @@ class ServerPilot:
                 raise ValueError('No valid domains found in vhost file.')
         except:
             raise ValueError('No valid domains found in vhost file.')
+
+    def certbotcmd(self, domains):
+        if not self.isvalidapp():
+            raise Exception('A valid app name is not provided.')
+        validdoms = []
+        try:
+            for domain in domains:
+                cmd = "certbot certonly --dry-run --webroot -w {} --register-unsafely-without-email --agree-tos --force-renewal -d {}".format(os.path.join(self.appdir(), 'public'), domain)
+                runcmd(cmd)
+                validdoms.append(domain)
+        except:
+            pass

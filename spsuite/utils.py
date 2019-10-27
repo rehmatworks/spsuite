@@ -468,9 +468,9 @@ class ServerPilot:
         url = re.compile(r"https?://(www\.)?")
         # Clean domains
         for domain in domainsstr:
-        	cleaneddomain = url.sub('', domain).strip().strip('/');
-        	if validators.domain(cleaneddomain):
-        		domainsarr.append(cleaneddomain)
+            cleaneddomain = url.sub('', domain).strip().strip('/');
+            if validators.domain(cleaneddomain):
+                domainsarr.append(cleaneddomain)
         return domainsarr
 
     def getappdomains(self):
@@ -480,9 +480,9 @@ class ServerPilot:
         data = c.get('conf')[-1:]
         try:
             domainsraw = search('server_name', data).split()
-			if isinstance(domainsraw, list):
-				domains = self.cleandomains(domainsraw)
-			else:
-				raise ValueError('No valid domains found in vhost file.')
+            if isinstance(domainsraw, list):
+                domains = self.cleandomains(domainsraw)
+            else:
+                raise ValueError('No valid domains found in vhost file.')
         except:
-			raise ValueError('No valid domains found in vhost file.')
+            raise ValueError('No valid domains found in vhost file.')

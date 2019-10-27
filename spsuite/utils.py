@@ -540,4 +540,4 @@ class ServerPilot:
             self.createnginxvhost()
             self.reloadservice('nginx-sp')
         except Exception as e:
-            raise Exception("SSL certificate cannot be removed: ".format(str(e)))
+            raise Exception("SSL certificate cannot be removed: {}".format(str(e)))

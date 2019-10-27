@@ -124,7 +124,7 @@ class ServerPilot:
             print(colored('Looks like you have not created any apps yet!', 'yellow'))
 
     def fixappperms(self):
-        runcmd("chown -R {}:{} {}".format(self.username, self.username, self.appsdir()))
+        runcmd("chown -R {}:{} {}".format(self.username, self.username, self.usrhome()))
 
     def userdirs(self):
         return [
@@ -132,6 +132,8 @@ class ServerPilot:
             os.path.join(self.usrhome(), 'log'),
             os.path.join(self.usrhome(), 'run'),
             os.path.join(self.usrhome(), 'tmp'),
+            os.path.join(self.usrhome(), '.local'),
+            os.path.join(self.usrhome(), '.config')
         ]
 
     def appdirs(self):

@@ -533,7 +533,11 @@ class ServerPilot:
 
     def removecert(self):
         if not self.isvalidapp():
-            raise Exceptin('A valid app name should be provided.')
+            raise Exception('A valid app name should be provided.')
+
+        if not os.path.exists(os.path.join(self.sslroot, 'live', self.app, 'fullchain.pem')):
+            raise Exception('The app {} does not have an active SSL certificate.'.format(self.app))
+
         details = self.appdetails()
         self.domains = details.get('domains')
         cmd = "certbot --non-interactive revoke --config-dir {} --cert-name {}".format(self.sslroot, self.app)
@@ -544,6 +548,6 @@ class ServerPilot:
                 reloadservice('nginx-sp')
             except:
                 restartservice('nginx-sp')
-                
+
         except Exception as e:
             raise Exception("SSL certificate cannot be removed: {}".format(str(e)))

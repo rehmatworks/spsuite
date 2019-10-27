@@ -7,10 +7,10 @@ Donations always remind me that my program is needed and appreciated by the comm
 ## Getting Started
 Recommended way to install SP Suite is via PIP.
 
-If PIP isn't installed on your system, you need to install it first:
+If PIP isn't installed on your system, you need to install it first. In addition to PIP, you need to install some other needed packages as well.
 
 ```bash
-sudo apt-get install python3-pip
+sudo apt-get -y install python3-pip build-essential libssl-dev libffi-dev python-dev
 ```
 
 And then run:

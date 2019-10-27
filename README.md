@@ -1,7 +1,7 @@
 # SP Suite (for ServerPilot)
 SP Suite is a Python library written to interact with ServerPilot-managed servers over CLI. If you want to manage your ServerPilot server over command line, this utility is for you.
 
-### Donations
+## Donations
 Donations always remind me that I write really useful programs. You can [**buy me a coffee here**](https://buymeacoffee.com/rehmat) if you really liked my work. This helps me manage time for open source projects.
 
 ## Getting Started

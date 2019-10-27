@@ -510,3 +510,8 @@ class ServerPilot:
                 validdoms.append(domain)
         except:
             pass
+
+        if len(validdoms) > 0:
+            print('Obtaining SSL for {} domains'.format(len(validdoms)))
+        else:
+            print('SSL not available for this app yet.')

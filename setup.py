@@ -2,20 +2,20 @@ from setuptools import setup
 import os
 import subprocess
 from setuptools.command.install import install
+import pkgutil
 
 class SetupSslRenewCron(install):
 	def run(self):
-		from spsuite.tools import parsetpl, runcmd
 		crondir = '/etc/cron.weekly'
 		cronfile = os.path.join(crondir, 'spsuite-sslrenewals')
 		if not os.path.exists(crondir):
 			os.makedirs(crondir)
 
 		certbotpath = subprocess.check_output(['which', 'certbot']).strip().decode('utf8')
-		cronfiledata = parsetpl('cron.tpl', data={'certbotpath': certbotpath})
 		with open(cronfile, 'w') as cf:
-			cf.write(cronfiledata)
-		runcmd("chmod +x {}".format(cronfile))
+			cf.writelines(['#!/bin/sh', 'certbot renew --non-interactive --config-dir /etc/nginx-sp/le-ssls --post-hook "service nginx-sp reload"'])
+		maxexeccmd = "chmod +x {}".format(cronfile)
+		subprocess.check_call([maxexeccmd], shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
 		install.run(self)
 
 setup(name='spsuite',

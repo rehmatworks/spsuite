@@ -519,6 +519,7 @@ class ServerPilot:
             self.createnginxsslvhost()
             try:
                 reloadservice('nginx-sp')
+                print(colored('SSL activated for app {} (Domains Secured: {})'.format(self.app, ' '.join(validdoms))))
             except:
                 try:
                     restartservice('nginx-sp')

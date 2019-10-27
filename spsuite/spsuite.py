@@ -76,6 +76,10 @@ def main():
     dropdb.add_argument('--name', dest='name', help='The name of the database that you want to delete.', required=True)
     subparsers.add_parser('dropalldbs', help='Drop all databases except system databases ({}).'.format(', '.join(ignoredbs)))
 
+    # SSL
+    ssl = subparsers.add_parser('getcert', help='Get letsencrypt cert for an app.')
+    ssl.add_argument('--app', dest='app', help='App name for which you want to get an SSL cert.', required=True)
+
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -393,5 +397,12 @@ def main():
             sp.username = args.username
             sp.createuser()
             print(colored('SSH user {} has been successfully created.'.format(args.username)))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))
+
+    if args.action == 'getcert':
+        sp.setapp(args.app)
+        try:
+            sp.getcert()
         except Exception as e:
             print(colored(str(e), 'yellow'))

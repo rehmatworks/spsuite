@@ -80,6 +80,9 @@ def main():
     ssl = subparsers.add_parser('getcert', help='Get letsencrypt cert for an app.')
     ssl.add_argument('--app', dest='app', help='App name for which you want to get an SSL cert.', required=True)
 
+    sslall = subparsers.add_parser('getcerts', help='Get letsencrypt certs for all apps.')
+    sslall.add_argument('--user', dest='user', help='SSH user to activate SSL for their owned apps. If not provided, SSL will be activated for all apps.', required=False)
+
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -407,3 +410,22 @@ def main():
             sp.getcert()
         except Exception as e:
             print(colored(str(e), 'yellow'))
+
+    if args.action == 'getcerts':
+        if args.user:
+            sp.setuser(args.user)
+            confirmmsg = 'Do you really want to activate SSL for all apps owned by {}?'.format(args.user)
+        else:
+            confirmmsg = 'Do you really want to activate SSL for all apps existing on this server?'
+        if doconfirm(confirmmsg):
+            try:
+                apps = self.findapps()
+                if len(apps) > 0:
+                    for app in apps:
+                        print(colored('Activating SSL for app {}'.format(app[1]), 'blue'))
+                        self.app = app[1]
+                        sp.getcert()
+                else:
+                    raise Exception('No apps found!')
+            except Exception as e:
+                print(colored(str(e), 'yellow'))

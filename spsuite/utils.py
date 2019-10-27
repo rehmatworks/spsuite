@@ -348,6 +348,11 @@ class ServerPilot:
             raise Exception('App name has not been provided.')
         appinfo = self.appdetails()
         if appinfo:
+            if self.apphasssl():
+                try:
+                    self.removecert()
+                except:
+                    pass
             self.username = appinfo.get('user')
             self.php = appinfo.get('php')
             appdirs = self.appdirs()
@@ -357,12 +362,6 @@ class ServerPilot:
             appdirs.append(os.path.join(self.metadir, '{}.json'.format(self.app)))
             for path in appdirs:
                 rmcontent(path)
-
-            if self.apphasssl():
-                try:
-                    self.removecert()
-                except:
-                    pass
             self.reloadservices()
 
     def allowunknown(self):

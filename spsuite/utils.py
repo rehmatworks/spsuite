@@ -501,10 +501,10 @@ class ServerPilot:
 
         if len(validdoms) > 0:
             domainsstr = ''
-            webroot = self.sslroot, os.path.join(self.appdir(), 'public')
+            webroot = os.path.join(self.appdir(), 'public')
             for vd in validdoms:
                 domainsstr += ' -d {}'.format(vd)
-            cmd = "certbot certonly --non-interactive --dry-run --agree-tos --register-unsafely-without-email --webroot -w {} --cert-name {} --config-dir {} {}".format(webroot, self.app, self.sslroot, domainsstr)
+            cmd = "certbot certonly --non-interactive --dry-run --agree-tos --register-unsafely-without-email --webroot -w {} --cert-name {} --config-dir {}{}".format(webroot, self.app, self.sslroot, domainsstr)
             print(cmd)
         else:
             print('SSL not available for this app yet.')

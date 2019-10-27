@@ -23,7 +23,7 @@ The alternate way to install SP Suite is cloning the repository:
 git clone https://github.com/rehmatworks/spsuite && cd spsuite && python3 setup.py install
 ```
 
-### Examples:
+## Examples:
 Here are a few examples to get you started:
 
 #### List Apps

@@ -505,10 +505,10 @@ class ServerPilot:
         return None
 
     def getcert(self):
-        with open(self.appnginxconf()) as nginxconf:
-            nginxconfbackup = nginxconf.read()
         if not self.isvalidapp():
             raise Exception('A valid app name is not provided.')
+        with open(self.appnginxconf()) as nginxconf:
+            nginxconfbackup = nginxconf.read()
         details = self.appdetails()
         self.setuser(details.get('user'))
         self.domains = details.get('domains')

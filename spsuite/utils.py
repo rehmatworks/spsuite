@@ -534,7 +534,7 @@ class ServerPilot:
     def removecert(self):
         if not self.isvalidapp():
             raise Exceptin('A valid app name should be provided.')
-        cmd = "certbot --non-interactive revoke --cert-name {}".format(self.app)
+        cmd = "certbot --non-interactive revoke --config-dir {} --cert-name {}".format(self.sslroot, self.app)
         try:
             runcmd(cmd)
             self.createnginxvhost()

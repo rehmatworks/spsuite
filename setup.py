@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 import subprocess
-from .tools import parsetpl
+from spsuite.tools import parsetpl
 
 class SetupSslRenewCron(install):
 	def run(self):

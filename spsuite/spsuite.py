@@ -419,7 +419,7 @@ def main():
             confirmmsg = 'Do you really want to activate SSL for all apps existing on this server?'
         if doconfirm(confirmmsg):
             try:
-                apps = self.findapps()
+                apps = sp.findapps()
                 if len(apps) > 0:
                     for app in apps:
                         print(colored('Activating SSL for app {}'.format(app[1]), 'blue'))

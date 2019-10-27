@@ -83,6 +83,12 @@ def main():
     sslall = subparsers.add_parser('getcerts', help='Get letsencrypt certs for all apps.')
     sslall.add_argument('--user', dest='user', help='SSH user to activate SSL for their owned apps. If not provided, SSL will be activated for all apps.', required=False)
 
+    ussl = subparsers.add_parser('removecert', help='Uninstall SSL cert from an app.')
+    ussl.add_argument('--app', dest='app', help='App name from which you want to uninstall the SSL cert.', required=True)
+
+    usslall = subparsers.add_parser('removecerts', help='Uninstall SSL certs for all apps.')
+    usslall.add_argument('--user', dest='user', help='SSH user to remove SSLs for their owned apps. If not provided, SSL will be uninstalled from all apps.', required=False)
+
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -429,3 +435,12 @@ def main():
                     raise Exception('No apps found!')
             except Exception as e:
                 print(colored(str(e), 'yellow'))
+
+    if args.action == 'removecert':
+        sp.setapp(args.app)
+        try:
+            print(colored('Uninstalling SSL from app {}.'.format(args.app), 'blue'))
+            sp.removecert()
+            print(colored('SSL has been uninstalled from the app {}.'.format(args.app), 'green'))
+        except Exception as e:
+            print(colored(str(e), 'yellow'))

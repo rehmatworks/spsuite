@@ -530,3 +530,14 @@ class ServerPilot:
                     raise Exception('SSL activation failed!')
         else:
             print('SSL not available for this app yet.')
+
+    def removecert(self):
+        if not self.isvalidapp():
+            raise Exceptin('A valid app name should be provided.')
+        cmd = "certbot --non-interactive revoke --cert-name {}".format(self.app)
+        try:
+            runcmd(cmd)
+            self.createnginxvhost()
+            self.reloadservice('nginx-sp')
+        except:
+            raise Exception("SSL certificate cannot be removed.")

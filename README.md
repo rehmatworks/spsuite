@@ -55,3 +55,26 @@ unforceall          Unforce HTTPs for all apps.
 denyunknown         Deny requests from unknown domains.
 allowunknown        Allow requests from unknown domains.
 ```
+
+You can use `spsuite -h` command to get to the help page on above commands.
+
+### Examples:
+Here are a few examples to get you started:
+
+#### List Apps
+To list all apps owned by all users on the server, use:
+```bash
+spsuite listapps
+```
+
+And to list apps for a specific SSH user, use:
+```bash
+spsuite listapps --user johndoe
+```
+
+#### Create App
+To create a new app, use `createapp` command:
+```bash
+spsuite createapp --name myapp --user johndoe --php 7.4 --domains example.com,www.example.com
+```
+Above command will create an app under SSH user **johndoe** with PHP version **7.4** and with domains **example.com** and **www.example.com**. If the SSH user **johdoe** is not present, it will be created first.

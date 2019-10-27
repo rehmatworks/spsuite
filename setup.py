@@ -2,9 +2,10 @@ from setuptools import setup
 import os
 import subprocess
 from spsuite.tools import parsetpl
+from setuptools.command.install import install
 
 class SetupSslRenewCron(install):
-	def run(self, install):
+	def run(self):
 		crondir = '/etc/cron.weekly'
 		cronfile = os.path.join(crondir, 'spsuite-sslrenewals')
 		if not os.path.exists(crondir):

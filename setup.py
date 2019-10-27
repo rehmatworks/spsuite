@@ -15,8 +15,8 @@ class SetupSslRenewCron(install):
 
 		if not os.path.exists(cronfile):
 			cronfiledata = parsetpl('cron.tpl', data={'certbotpath': certbotpath})
-			with open(cronfile, 'w'):
-				cronfile.write(cronfiledata)
+			with open(cronfile, 'w') as cf:
+				cf.write(cronfiledata)
 		install.run(self)
 
 setup(name='spsuite',

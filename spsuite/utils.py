@@ -496,6 +496,7 @@ class ServerPilot:
             raise Exception('A valid app name is not provided.')
         details = self.appdetails()
         self.setuser(details.get('user'))
+        self.domains = details.get('domains')
         validdoms = []
         try:
             for domain in details.get('domains'):

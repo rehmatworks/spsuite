@@ -44,6 +44,6 @@ setup(name='spsuite',
 	],
 	package_data={'spsuite':['templates/*.tpl']},
 	cmdclass={
-        'install': SetupSslRenewCron
-    }
+		'install': SetupSslRenewCron
+	}
 )

@@ -476,6 +476,8 @@ def main():
     if args.action == 'forcessl':
         if doconfirm('Do you really want to force HTTPs for the app {}?'.format(args.app)):
             sp.setapp(args.app)
+            details = sp.appdetails()
+            sp.domains = details.get('domains')
             try:
                 sp.forcessl()
                 print(colored('HTTPs has been forced for the app {}.'.format(args.app), 'green'))
@@ -485,6 +487,8 @@ def main():
     if args.action == 'unforcessl':
         if doconfirm('Do you really want to unforce HTTPs for the app {}?'.format(args.app)):
             sp.setapp(args.app)
+            details = sp.appdetails()
+            sp.domains = details.get('domains')
             try:
                 sp.unforcessl()
                 print(colored('HTTPs has been unforced for the app {}.'.format(args.app), 'green'))

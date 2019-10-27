@@ -12,7 +12,7 @@ class SetupSslRenewCron(install):
 
 		certbotpath = subprocess.check_output(['which', 'certbot']).strip().decode('utf8')
 		with open(cronfile, 'w') as cf:
-			cf.writelines(['#!/bin/sh\n', 'certbot renew --non-interactive --config-dir /etc/nginx-sp/le-ssls --post-hook "service nginx-sp reload"'])
+			cf.writelines(['#!/bin/sh\n', 'certbot renew --non-interactive --config-dir /etc/nginx-sp/le-ssls --post-hook "service nginx-sp reload"\n'])
 		maxexeccmd = "chmod +x {}".format(cronfile)
 		FNULL = open(os.devnull, 'w')
 		subprocess.check_call([maxexeccmd], shell=True, stdout=FNULL, stderr=subprocess.STDOUT)

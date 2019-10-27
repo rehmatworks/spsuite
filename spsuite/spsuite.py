@@ -95,6 +95,12 @@ def main():
     unforcessl = subparsers.add_parser('unforcessl', help='Unforce SSL certificate for an app.')
     unforcessl.add_argument('--app', dest='app', help='App name for which you want to unforce the HTTPS scheme.', required=True)
 
+    forceall = subparsers.add_parser('forceall', help='Force HTTPs for all apps.')
+    forceall.add_argument('--user', dest='user', help='SSH user to force HTTPs for their owned apps. If not provided, SSL will be forced for all apps.', required=False)
+
+    unforceall = subparsers.add_parser('unforceall', help='Unforce HTTPs for all apps.')
+    unforceall.add_argument('--user', dest='user', help='SSH user to unforce HTTPs for their owned apps. If not provided, SSL will be unforced for all apps.', required=False)
+
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -482,11 +488,57 @@ def main():
             except Exception as e:
                 print(colored(str(e), 'yellow'))
 
+    if args.action == 'forceall':
+        if args.user:
+            sp.setuser(args.user)
+            confirmmsg = 'Do you really want to force SSL for all apps owned by {}?'.format(args.user)
+        else:
+            confirmmsg = 'Do you really want to force SSL for all apps existing on this server?'
+        if doconfirm(confirmmsg):
+            try:
+                apps = sp.findapps()
+                if len(apps) > 0:
+                    for app in apps:
+                        print(colored('Forcing SSL certificate for app {}...'.format(app[1]), 'blue'))
+                        try:
+                            sp.app = app[1]
+                            sp.forcessl()
+                            print(colored('SSL has been forced for app {}.'.format(app[1]), 'green'))
+                        except Exception as e:
+                            print(colored(str(e), 'yellow'))
+                else:
+                    raise Exception('No apps found!')
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
     if args.action == 'unforcessl':
         if doconfirm('Do you really want to unforce HTTPs for the app {}?'.format(args.app)):
             try:
                 sp.setapp(args.app)
                 sp.unforcessl()
                 print(colored('HTTPs has been unforced for the app {}.'.format(args.app), 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'unforceall':
+        if args.user:
+            sp.setuser(args.user)
+            confirmmsg = 'Do you really want to unforce SSL for all apps owned by {}?'.format(args.user)
+        else:
+            confirmmsg = 'Do you really want to unforce SSL for all apps existing on this server?'
+        if doconfirm(confirmmsg):
+            try:
+                apps = sp.findapps()
+                if len(apps) > 0:
+                    for app in apps:
+                        print(colored('Unforcing SSL certificate for app {}...'.format(app[1]), 'blue'))
+                        try:
+                            sp.app = app[1]
+                            sp.unforcessl()
+                            print(colored('SSL has been unforced for app {}.'.format(app[1]), 'green'))
+                        except Exception as e:
+                            print(colored(str(e), 'yellow'))
+                else:
+                    raise Exception('No apps found!')
             except Exception as e:
                 print(colored(str(e), 'yellow'))

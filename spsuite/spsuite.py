@@ -429,7 +429,7 @@ def main():
                 apps = sp.findapps()
                 if len(apps) > 0:
                     for app in apps:
-                        print(colored('Activating SSL for app {}'.format(app[1]), 'blue'))
+                        print(colored('Activating SSL for app {}...'.format(app[1]), 'blue'))
                         sp.app = app[1]
                         sp.getcert()
                 else:
@@ -441,7 +441,7 @@ def main():
         if doconfirm('Do you really want to uninstall SSL certificate for the app {}?'.format(args.app)):
             sp.setapp(args.app)
             try:
-                print(colored('Uninstalling SSL from app {}.'.format(args.app), 'blue'))
+                print(colored('Uninstalling SSL from app {}...'.format(args.app), 'blue'))
                 sp.removecert()
                 print(colored('SSL has been uninstalled from the app {}.'.format(args.app), 'green'))
             except Exception as e:
@@ -458,7 +458,7 @@ def main():
                 apps = sp.findapps()
                 if len(apps) > 0:
                     for app in apps:
-                        print(colored('Removing SSL from app {}.'.format(app[1]), 'blue'))
+                        print(colored('Removing SSL from app {}...'.format(app[1]), 'blue'))
                         sp.app = app[1]
                         sp.removecert()
                         print(colored('SSL has been uninstalled from app {}.'.format(app[1]), 'green'))

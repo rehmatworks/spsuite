@@ -104,5 +104,5 @@ rm /etc/cron.weekly/spsuite-sslrenewals
 
 That's all!
 
-### Bugs & Suggestions
+## Bugs & Suggestions
 Although you should never encounter any security-related issues, but still if you find a security-related issue, please drop an email at contact[at]rehmat.works. For other common issues, you can use the issues section in this repo directly.

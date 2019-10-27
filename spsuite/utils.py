@@ -518,8 +518,11 @@ class ServerPilot:
             try:
                 reloadservice('nginx-sp')
             except:
-                self.createnginxvhost()
-                reloadservice('nginx-sp')
-                raise Exception('SSL activation failed!')
+                try:
+                    restartservice('nginx-sp')
+                except:
+                    self.createnginxvhost()
+                    restartservice('nginx-sp')
+                    raise Exception('SSL activation failed!')
         else:
             print('SSL not available for this app yet.')

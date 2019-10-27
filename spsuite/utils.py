@@ -494,7 +494,8 @@ class ServerPilot:
                 cmd = "certbot certonly --dry-run --webroot -w {} --register-unsafely-without-email --agree-tos --force-renewal -d {}".format(os.path.join(self.appdir(), 'public'), domain)
                 runcmd(cmd)
                 validdoms.append(domain)
-        except:
+        except Exception as e:
+            print(str(e))
             pass
 
         if len(validdoms) > 0:

@@ -473,6 +473,15 @@ class ServerPilot:
                 domainsarr.append(cleaneddomain)
         return domainsarr
 
+    def search(self, value, data):
+        for conf in data:
+            blocks = conf.get('server')
+            for block in blocks:
+                found = block.get(value)
+                if found:
+                    return found
+        return None
+
     def getappdomains(self):
         if not self.isvalidapp():
             raise Exception('A valid app name has not been provided.')
@@ -480,7 +489,7 @@ class ServerPilot:
         c = nginx.loadf(conf_file).as_dict
         data = c.get('conf')[-1:]
         try:
-            domainsraw = search('server_name', data).split()
+            domainsraw = self.search('server_name', data).split()
             if isinstance(domainsraw, list):
                 domains = self.cleandomains(domainsraw)
             else:

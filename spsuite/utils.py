@@ -513,6 +513,12 @@ class ServerPilot:
                 domainsstr += ' -d {}'.format(vd)
             cmd = "certbot certonly --non-interactive --agree-tos --register-unsafely-without-email --webroot -w {} --cert-name {} --config-dir {}{}".format(webroot, self.app, self.sslroot, domainsstr)
             runcmd(cmd)
-
+            self.createnginxsslvhost()
+            try:
+                reloadservice('nginx-sp')
+            except:
+                self.createnginxvhost()
+                reloadservice('nginx-sp')
+                raise Exception('SSL activation failed!')
         else:
             print('SSL not available for this app yet.')

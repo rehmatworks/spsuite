@@ -226,6 +226,13 @@ class ServerPilot:
         with open(self.appnginxconf(), 'w') as nginxconf:
             nginxconf.write(nginxtpldata)
 
+    def createnginxsslforcedvhost(self):
+        data = self.gettpldata()
+        data.update({'sslpath': self.sslroot})
+        nginxtpldata = parsetpl('nginx-sslforced.tpl', data=data)
+        with open(self.appnginxconf(), 'w') as nginxconf:
+            nginxconf.write(nginxtpldata)
+
     def createapachevhost(self):
         data = self.gettpldata()
         apachemaindata = parsetpl('apache-main.tpl')
@@ -531,11 +538,14 @@ class ServerPilot:
         else:
             print('SSL not available for this app yet.')
 
+    def apphasssl(self):
+        return os.path.exists(os.path.join(self.sslroot, 'live', self.app, 'fullchain.pem'))
+
     def removecert(self):
         if not self.isvalidapp():
             raise Exception('A valid app name should be provided.')
 
-        if not os.path.exists(os.path.join(self.sslroot, 'live', self.app, 'fullchain.pem')):
+        if not self.apphasssl():
             raise Exception('The app {} does not have an active SSL certificate.'.format(self.app))
 
         details = self.appdetails()
@@ -551,3 +561,26 @@ class ServerPilot:
 
         except Exception as e:
             raise Exception("SSL certificate cannot be removed: {}".format(str(e)))
+
+    def forcessl(self):
+        if not self.isvalidapp():
+            raise Exception('A valid app name should be provided.')
+        if not self.apphasssl():
+            raise Exception('The app {} does not have an active SSL certificate.'.format(self.app))
+        self.createnginxsslforcedvhost()
+        try:
+            reloadservice('nginx-sp')
+        except:
+            restartservice('nginx-sp')
+
+    def unforcessl(self):
+        if not self.isvalidapp():
+            raise Exception('A valid app name should be provided.')
+        if self.apphasssl():
+            self.createnginxsslvhost()
+        else:
+            self.createnginxvhost()
+        try:
+            reloadservice('nginx-sp')
+        except:
+            restartservice('nginx-sp')

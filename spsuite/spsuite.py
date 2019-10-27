@@ -89,6 +89,12 @@ def main():
     usslall = subparsers.add_parser('removecerts', help='Uninstall SSL certs for all apps.')
     usslall.add_argument('--user', dest='user', help='SSH user to remove SSLs for their owned apps. If not provided, SSL will be uninstalled from all apps.', required=False)
 
+    forcessl = subparsers.add_parser('forcessl', help='Force SSL certificate for an app.')
+    forcessl.add_argument('--app', dest='app', help='App name for which you want to force the HTTPS scheme.', required=True)
+
+    unforcessl = subparsers.add_parser('unforcessl', help='Unforce SSL certificate for an app.')
+    unforcessl.add_argument('--app', dest='app', help='App name for which you want to unforce the HTTPS scheme.', required=True)
+
     # Deny unknown domains
     subparsers.add_parser('denyunknown', help='Deny requests from unknown domains.')
 
@@ -464,5 +470,23 @@ def main():
                         print(colored('SSL has been uninstalled from app {}.'.format(app[1]), 'green'))
                 else:
                     raise Exception('No apps found!')
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'forcessl':
+        if doconfirm('Do you really want to force HTTPs for the app {}?'.format(args.app)):
+            sp.setapp(args.app)
+            try:
+                sp.forcessl()
+                print(colored('HTTPs has been forced for the app {}.'.format(args.app), 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'unforcessl':
+        if doconfirm('Do you really want to unforce HTTPs for the app {}?'.format(args.app)):
+            sp.setapp(args.app)
+            try:
+                sp.unforcessl()
+                print(colored('HTTPs has been unforced for the app {}.'.format(args.app), 'green'))
             except Exception as e:
                 print(colored(str(e), 'yellow'))

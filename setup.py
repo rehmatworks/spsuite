@@ -19,7 +19,7 @@ class SetupSslRenewCron(install):
 		install.run(self)
 
 setup(name='spsuite',
-	version='1.0.0',
+	version='1.0.1',
 	description='Command line utilities to manage ServerPilot provisioned servers.',
 	author="Rehmat Alam",
 	author_email="contact@rehmat.works",

@@ -437,10 +437,31 @@ def main():
                 print(colored(str(e), 'yellow'))
 
     if args.action == 'removecert':
-        sp.setapp(args.app)
-        try:
-            print(colored('Uninstalling SSL from app {}.'.format(args.app), 'blue'))
-            sp.removecert()
-            print(colored('SSL has been uninstalled from the app {}.'.format(args.app), 'green'))
-        except Exception as e:
-            print(colored(str(e), 'yellow'))
+        if doconfirm('Do you really want to uninstall SSL certificate for the app {}?'.format(args.app)):
+            sp.setapp(args.app)
+            try:
+                print(colored('Uninstalling SSL from app {}.'.format(args.app), 'blue'))
+                sp.removecert()
+                print(colored('SSL has been uninstalled from the app {}.'.format(args.app), 'green'))
+            except Exception as e:
+                print(colored(str(e), 'yellow'))
+
+    if args.action == 'removecerts':
+        if args.user:
+            sp.setuser(args.user)
+            confirmmsg = 'Do you really want to uninstall SSL for all apps owned by {}?'.format(args.user)
+        else:
+            confirmmsg = 'Do you really want to uninstall SSL for all apps existing on this server?'
+        if doconfirm(confirmmsg):
+            try:
+                apps = sp.findapps()
+                if len(apps) > 0:
+                    for app in apps:
+                        print(colored('Removing SSL from app {}.'.format(app[1]), 'blue'))
+                        sp.app = app[1]
+                        sp.removecert()
+                        print(colored('SSL has been uninstalled from app {}.'.format(app[1]), 'green'))
+                else:
+                    raise Exception('No apps found!')
+            except Exception as e:
+                print(colored(str(e), 'yellow'))

@@ -483,28 +483,14 @@ class ServerPilot:
                     return found
         return None
 
-    def getappdomains(self):
-        if not self.isvalidapp():
-            raise Exception('A valid app name has not been provided.')
-        conf_file = self.appnginxconf()
-        c = nginx.loadf(conf_file).as_dict
-        data = c.get('conf')[-1:]
-        try:
-            domainsraw = self.search('server_name', data).split()
-            if isinstance(domainsraw, list):
-                domains = self.cleandomains(domainsraw)
-                return domains
-            else:
-                raise ValueError('No valid domains found in vhost file.')
-        except:
-            raise ValueError('No valid domains found in vhost file.')
-
-    def certbotcmd(self, domains):
+    def getcert(self):
         if not self.isvalidapp():
             raise Exception('A valid app name is not provided.')
+        details = self.appdetails()
+        self.setuser(details.get('user'))
         validdoms = []
         try:
-            for domain in domains:
+            for domain in details.get('domains'):
                 cmd = "certbot certonly --dry-run --webroot -w {} --register-unsafely-without-email --agree-tos --force-renewal -d {}".format(os.path.join(self.appdir(), 'public'), domain)
                 runcmd(cmd)
                 validdoms.append(domain)

@@ -276,6 +276,8 @@ class ServerPilot:
         bashrcdata = parsetpl('bashrc.tpl')
         with open(os.path.join(self.usrhome(), '.bashrc'), 'w') as brc:
             brc.write(bashrcdata)
+            
+        self.fixappperms()
 
     def reloadservices(self):
         reloadservice('nginx-sp')

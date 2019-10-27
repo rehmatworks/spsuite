@@ -492,6 +492,8 @@ class ServerPilot:
         return None
 
     def getcert(self):
+        with open(self.appnginxconf()) as nginxconf:
+            nginxconfbackup = nginxconf.read()
         if not self.isvalidapp():
             raise Exception('A valid app name is not provided.')
         details = self.appdetails()
@@ -521,7 +523,8 @@ class ServerPilot:
                 try:
                     restartservice('nginx-sp')
                 except:
-                    self.createnginxvhost()
+                    with open(self.appnginxconf(), 'w') as restoreconf:
+                        restoreconf.write(nginxconfbackup)
                     restartservice('nginx-sp')
                     raise Exception('SSL activation failed!')
         else:

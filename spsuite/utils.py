@@ -358,6 +358,12 @@ class ServerPilot:
             appdirs.append(os.path.join(self.metadir, '{}.json'.format(self.app)))
             for path in appdirs:
                 rmcontent(path)
+
+            if self.apphasssl():
+                try:
+                    self.removecert()
+                except:
+                    pass
             self.reloadservices()
 
     def allowunknown(self):

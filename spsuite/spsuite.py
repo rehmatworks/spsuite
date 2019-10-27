@@ -413,7 +413,7 @@ def main():
         if doconfirm('Do you really want to obtain an SSL certificate for the app {}?'.format(args.app)):
             sp.setapp(args.app)
             try:
-                print(colored('Activating SSL for app {}'.format(args.app), 'blue'))
+                print(colored('Activating SSL for app {}...'.format(args.app), 'blue'))
                 sp.getcert()
             except Exception as e:
                 print(colored(str(e), 'yellow'))

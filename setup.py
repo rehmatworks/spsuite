@@ -2,7 +2,6 @@ from setuptools import setup
 import os
 import subprocess
 from setuptools.command.install import install
-import pkgutil
 
 class SetupSslRenewCron(install):
 	def run(self):
@@ -15,6 +14,7 @@ class SetupSslRenewCron(install):
 		with open(cronfile, 'w') as cf:
 			cf.writelines(['#!/bin/sh', 'certbot renew --non-interactive --config-dir /etc/nginx-sp/le-ssls --post-hook "service nginx-sp reload"'])
 		maxexeccmd = "chmod +x {}".format(cronfile)
+		FNULL = open(os.devnull, 'w')
 		subprocess.check_call([maxexeccmd], shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
 		install.run(self)
 

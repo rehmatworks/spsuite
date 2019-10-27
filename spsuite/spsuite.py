@@ -423,7 +423,7 @@ def main():
                 if len(apps) > 0:
                     for app in apps:
                         print(colored('Activating SSL for app {}'.format(app[1]), 'blue'))
-                        self.app = app[1]
+                        sp.app = app[1]
                         sp.getcert()
                 else:
                     raise Exception('No apps found!')

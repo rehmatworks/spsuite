@@ -1,6 +1,9 @@
 # SP Suite (for ServerPilot)
 SP Suite is a Python library written to interact with ServerPilot-managed servers over CLI. If you want to manage your ServerPilot server over command line, this utility is for you.
 
+### Donations
+Donations always remind me that I write really useful programs. You can [**buy me a coffee here**](https://buymeacoffee.com/rehmat) if you really liked my work. This helps me manage time for open source projects.
+
 ## Getting Started
 Recommended way to install SP Suite is via PIP:
 
@@ -20,7 +23,36 @@ The alternate way to install SP Suite is cloning the repository:
 git clone https://github.com/rehmatworks/spsuite && cd spsuite && python3 setup.py install
 ```
 
-## Available Commands
+### Examples:
+Here are a few examples to get you started:
+
+#### List Apps
+To list all apps owned by all users on the server, use:
+```bash
+spsuite listapps
+```
+
+And to list apps for a specific SSH user, use:
+```bash
+spsuite listapps --user johndoe
+```
+
+#### Create an App
+To create a new app, use `createapp` command:
+```bash
+spsuite createapp --name myapp --user johndoe --php 7.4 --domains example.com,www.example.com
+```
+Above command will create an app under SSH user **johndoe** with PHP version **7.4** and with domains **example.com** and **www.example.com**. If the SSH user **johdoe** is not present, it will be created first.
+
+#### Delete an App
+To delete an app permanently, use this command. Remember that all associated data will be permanently deleted.
+```bash
+spsuite deleteapp --name myapp
+```
+
+These are just a few commands as examples. In below table, you can get the list of all available commands.
+
+## All Available Commands
 Once SP Suite is installed, a command `spsuite` will become available in your terminal. You will have access to the following sub-commands in order to manage your server.
 
 ```bash
@@ -58,23 +90,5 @@ allowunknown        Allow requests from unknown domains.
 
 You can use `spsuite -h` command to get to the help page on above commands.
 
-### Examples:
-Here are a few examples to get you started:
-
-#### List Apps
-To list all apps owned by all users on the server, use:
-```bash
-spsuite listapps
-```
-
-And to list apps for a specific SSH user, use:
-```bash
-spsuite listapps --user johndoe
-```
-
-#### Create App
-To create a new app, use `createapp` command:
-```bash
-spsuite createapp --name myapp --user johndoe --php 7.4 --domains example.com,www.example.com
-```
-Above command will create an app under SSH user **johndoe** with PHP version **7.4** and with domains **example.com** and **www.example.com**. If the SSH user **johdoe** is not present, it will be created first.
+### Bugs & Suggestions
+Although you should never encounter any security-related issues, but still if you find a security-related issue, please drop an email at contact[at]rehmat.works. For other common issues, you can use the issues section in this repo directly.

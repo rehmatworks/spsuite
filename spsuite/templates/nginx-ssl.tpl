@@ -6,14 +6,31 @@
 # For information on how to customize nginx settings, see
 # https://serverpilot.io/community/articles/customize-nginx-settings.html
 ###############################################################################
+server {
+    listen       80;
+    listen       [::]:80;
+    server_name {{ servername }}{% if serveralias %} {{ serveralias }}{% endif %};
+
+    root   /srv/users/{{ username }}/apps/{{ appname }}/public;
+
+    access_log  /srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_nginx.access.log  main;
+    error_log  /srv/users/{{ username }}/log/{{ appname }}/{{ appname }}_nginx.error.log;
+
+    proxy_set_header    Host              $host;
+    proxy_set_header    X-Real-IP         $remote_addr;
+    proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+
+    include /etc/nginx-sp/vhosts.d/{{ appname }}.d/*.nonssl_conf;
+    include /etc/nginx-sp/vhosts.d/{{ appname }}.d/*.conf;
+}
 
 server {
     listen       443 ssl http2;
     listen       [::]:443 ssl http2;
     server_name {{ servername }}{% if serveralias %} {{ serveralias }}{% endif %};
 
-    ssl_certificate_key      ssl/{{ appname }}.key;
-    ssl_certificate          ssl/{{ appname }}.combined_crt;
+    ssl_certificate_key      {{ sslpath }}/live/{{appname}}/privkey.pem;
+    ssl_certificate          {{ sslpath }}/live/{{appname}}/fullchain.pem;
 
     root   /srv/users/{{ username }}/apps/{{ appname }}/public;
 

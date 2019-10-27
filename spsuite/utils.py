@@ -14,7 +14,7 @@ class ServerPilot:
         self.usrdataroot = os.path.join(self.mainroot, 'srv', 'users')
         self.nginxroot = os.path.join(self.mainroot, 'etc', 'nginx-sp')
         self.apacheroot = os.path.join(self.mainroot, 'etc', 'apache-sp')
-        self.sslroot = os.path.join(self.nginxroot, 'ssls')
+        self.sslroot = os.path.join(self.nginxroot, 'le-ssls')
         self.metadir = os.path.join(self.mainroot, 'srv', '.meta')
         self.vhostdir = 'vhosts.d'
         self.username = username
@@ -216,6 +216,13 @@ class ServerPilot:
         with open(os.path.join(self.nginxroot, self.vhostdir, '{}.d'.format(self.app), 'main.conf'), 'w') as nginxmain:
             nginxmain.write(nginxmaindata)
         nginxtpldata = parsetpl('nginx.tpl', data=data)
+        with open(self.appnginxconf(), 'w') as nginxconf:
+            nginxconf.write(nginxtpldata)
+
+    def createnginxsslvhost(self):
+        data = self.gettpldata()
+        data.update({'sslpath': self.sslroot})
+        nginxtpldata = parsetpl('nginx-ssl.tpl', data=data)
         with open(self.appnginxconf(), 'w') as nginxconf:
             nginxconf.write(nginxtpldata)
 
@@ -504,7 +511,8 @@ class ServerPilot:
             webroot = os.path.join(self.appdir(), 'public')
             for vd in validdoms:
                 domainsstr += ' -d {}'.format(vd)
-            cmd = "certbot certonly --non-interactive --dry-run --agree-tos --register-unsafely-without-email --webroot -w {} --cert-name {} --config-dir {}{}".format(webroot, self.app, self.sslroot, domainsstr)
-            print(cmd)
+            cmd = "certbot certonly --non-interactive --agree-tos --register-unsafely-without-email --webroot -w {} --cert-name {} --config-dir {}{}".format(webroot, self.app, self.sslroot, domainsstr)
+            runcmd(cmd)
+
         else:
             print('SSL not available for this app yet.')

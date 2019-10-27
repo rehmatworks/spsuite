@@ -90,5 +90,19 @@ allowunknown        Allow requests from unknown domains.
 
 You can use `spsuite -h` command to get to the help page on above commands.
 
+## Uninstall
+To uninstall SP Suite completely, run:
+```bash
+pip3 uninstall spsuite
+```
+
+As a CRON job is added for SSL renewals by SP Suite, you can remove the CRON file by running:
+
+```bash
+rm /etc/cron.weekly/spsuite-sslrenewals
+```
+
+That's all!
+
 ### Bugs & Suggestions
 Although you should never encounter any security-related issues, but still if you find a security-related issue, please drop an email at contact[at]rehmat.works. For other common issues, you can use the issues section in this repo directly.

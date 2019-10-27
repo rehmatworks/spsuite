@@ -550,6 +550,7 @@ class ServerPilot:
 
         details = self.appdetails()
         self.domains = details.get('domains')
+        self.setuser(details.get('user'))
         cmd = "certbot --non-interactive revoke --config-dir {} --cert-name {}".format(self.sslroot, self.app)
         try:
             runcmd(cmd)
@@ -568,6 +569,7 @@ class ServerPilot:
         if not self.apphasssl():
             raise Exception('The app {} does not have an active SSL certificate.'.format(self.app))
         details = self.appdetails()
+        self.setuser(details.get('user'))
         self.domains = details.get('domains')
         self.createnginxsslforcedvhost()
         try:
@@ -579,6 +581,7 @@ class ServerPilot:
         if not self.isvalidapp():
             raise Exception('A valid app name should be provided.')
         details = self.appdetails()
+        self.setuser(details.get('user'))
         self.domains = details.get('domains')
         if self.apphasssl():
             self.createnginxsslvhost()

@@ -21,7 +21,8 @@ setup(name='spsuite',
 		'termcolor',
 		'tabulate',
 		'Jinja2',
-		'pymysql'
+		'pymysql',
+		'certbot'
 	],
 	package_data={'spsuite':['templates/*.tpl']},
 )

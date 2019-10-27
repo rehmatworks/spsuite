@@ -6,7 +6,6 @@ import nginx
 import json
 import validators
 from getpass import getpass
-import re
 
 class ServerPilot:
     def __init__(self, username = False, app = False):
@@ -484,16 +483,6 @@ class ServerPilot:
         for user in usersres:
             users.append(user[0])
         return users
-
-    def cleandomains(self, domainsstr):
-        domainsarr = []
-        url = re.compile(r"https?://(www\.)?")
-        # Clean domains
-        for domain in domainsstr:
-            cleaneddomain = url.sub('', domain).strip().strip('/');
-            if validators.domain(cleaneddomain):
-                domainsarr.append(cleaneddomain)
-        return domainsarr
 
     def search(self, value, data):
         for conf in data:

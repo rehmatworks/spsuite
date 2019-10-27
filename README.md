@@ -5,16 +5,18 @@ SP Suite is a Python library written to interact with ServerPilot-managed server
 Donations always remind me that my program is needed and appreciated by the community. You can [**buy me a coffee here**](https://buymeacoffee.com/rehmat) if you really liked my work. This helps and encourages me to dedicate time for open source projects.
 
 ## Getting Started
-Recommended way to install SP Suite is via PIP:
-
-```bash
-pip3 install spsuite
-```
+Recommended way to install SP Suite is via PIP.
 
 If PIP isn't installed on your system, you need to install it first:
 
 ```bash
 sudo apt-get install python3-pip
+```
+
+And then run:
+
+```bash
+pip3 install spsuite
 ```
 
 The alternate way to install SP Suite is cloning the repository:

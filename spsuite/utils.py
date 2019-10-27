@@ -133,6 +133,7 @@ class ServerPilot:
             os.path.join(self.usrhome(), 'run'),
             os.path.join(self.usrhome(), 'tmp'),
             os.path.join(self.usrhome(), '.local'),
+            os.path.join(self.usrhome(), '.local', 'share'),
             os.path.join(self.usrhome(), '.config')
         ]
 

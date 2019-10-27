@@ -81,13 +81,12 @@ Once SP Suite is installed, a command `spsuite` will become available in your te
 | getcerts | Get letsencrypt certs for all apps. |
 | removecert | Uninstall SSL cert from an app. |
 | removecerts | Uninstall SSL certs for all apps. |
-forcessl            Force SSL certificate for an app.
-unforcessl          Unforce SSL certificate for an app.
-forceall            Force HTTPs for all apps.
-unforceall          Unforce HTTPs for all apps.
-denyunknown         Deny requests from unknown domains.
-allowunknown        Allow requests from unknown domains.
-```
+| forcessl | Force SSL certificate for an app. |
+| unforcessl | Unforce SSL certificate for an app. |
+| forceall | Force HTTPs for all apps. |
+| unforceall | Unforce HTTPs for all apps. |
+| denyunknown | Deny requests from unknown domains. |
+| allowunknown | Allow requests from unknown domains. |
 
 You can use `spsuite -h` command to get to the help page on above commands.
 

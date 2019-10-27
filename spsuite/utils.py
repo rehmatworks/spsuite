@@ -534,6 +534,8 @@ class ServerPilot:
     def removecert(self):
         if not self.isvalidapp():
             raise Exceptin('A valid app name should be provided.')
+        details = self.appdetails()
+        self.domains = details.get('domains')
         cmd = "certbot --non-interactive revoke --config-dir {} --cert-name {}".format(self.sslroot, self.app)
         try:
             runcmd(cmd)

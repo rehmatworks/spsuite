@@ -276,7 +276,6 @@ class ServerPilot:
         bashrcdata = parsetpl('bashrc.tpl')
         with open(os.path.join(self.usrhome(), '.bashrc'), 'w') as brc:
             brc.write(bashrcdata)
-            
         self.fixappperms()
 
     def reloadservices(self):
@@ -463,3 +462,27 @@ class ServerPilot:
         for user in usersres:
             users.append(user[0])
         return users
+
+    def cleandomains(self, domainsstr):
+        domainsarr = []
+        url = re.compile(r"https?://(www\.)?")
+        # Clean domains
+        for domain in domainsstr:
+        	cleaneddomain = url.sub('', domain).strip().strip('/');
+        	if validators.domain(cleaneddomain):
+        		domainsarr.append(cleaneddomain)
+        return domainsarr
+
+    def getappdomains(self):
+        if not self.isvalidapp():
+            raise Exception('A valid app name has not been provided.')
+        c = nginx.loadf(conf_file).as_dict
+        data = c.get('conf')[-1:]
+        try:
+            domainsraw = search('server_name', data).split()
+			if isinstance(domainsraw, list):
+				domains = self.cleandomains(domainsraw)
+			else:
+				raise ValueError('No valid domains found in vhost file.')
+        except:
+			raise ValueError('No valid domains found in vhost file.')

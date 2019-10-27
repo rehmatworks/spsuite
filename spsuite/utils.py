@@ -567,6 +567,8 @@ class ServerPilot:
             raise Exception('A valid app name should be provided.')
         if not self.apphasssl():
             raise Exception('The app {} does not have an active SSL certificate.'.format(self.app))
+        details = self.appdetails()
+        self.domains = details.get('domains')
         self.createnginxsslforcedvhost()
         try:
             reloadservice('nginx-sp')
@@ -576,6 +578,8 @@ class ServerPilot:
     def unforcessl(self):
         if not self.isvalidapp():
             raise Exception('A valid app name should be provided.')
+        details = self.appdetails()
+        self.domains = details.get('domains')
         if self.apphasssl():
             self.createnginxsslvhost()
         else:

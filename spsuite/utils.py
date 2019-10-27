@@ -14,6 +14,7 @@ class ServerPilot:
         self.usrdataroot = os.path.join(self.mainroot, 'srv', 'users')
         self.nginxroot = os.path.join(self.mainroot, 'etc', 'nginx-sp')
         self.apacheroot = os.path.join(self.mainroot, 'etc', 'apache-sp')
+        self.sslroot = ps.path.join(self.nginxroot, 'ssls')
         self.metadir = os.path.join(self.mainroot, 'srv', '.meta')
         self.vhostdir = 'vhosts.d'
         self.username = username
@@ -491,7 +492,7 @@ class ServerPilot:
         validdoms = []
         try:
             for domain in details.get('domains'):
-                cmd = "certbot certonly --dry-run --webroot -w {} --register-unsafely-without-email --agree-tos --force-renewal -d {}".format(os.path.join(self.appdir(), 'public'), domain)
+                cmd = "certbot certonly --non-interactive --dry-run --webroot -w {} --register-unsafely-without-email --agree-tos -d {}".format(os.path.join(self.appdir(), 'public'), domain)
                 runcmd(cmd)
                 validdoms.append(domain)
         except Exception as e:
@@ -499,6 +500,11 @@ class ServerPilot:
             pass
 
         if len(validdoms) > 0:
-            print('Obtaining SSL for {} domains'.format(len(validdoms)))
+            domainsstr = ''
+            webroot = self.sslroot, os.path.join(self.appdir(), 'public')
+            for vd in validdoms:
+                domainsstr += ' -d {}'.format(vd)
+            cmd = "certbot certonly --non-interactive --dry-run --agree-tos --register-unsafely-without-email --webroot -w {} --cert-name {} --config-dir {} {}".format(webroot, self.app, self.sslroot, domainsstr)
+            print(cmd)
         else:
             print('SSL not available for this app yet.')

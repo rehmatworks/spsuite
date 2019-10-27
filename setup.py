@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 import subprocess
-from spsuite.tools import parsetpl
+from spsuite.tools import parsetpl, runcmd
 from setuptools.command.install import install
 
 class SetupSslRenewCron(install):
@@ -12,11 +12,10 @@ class SetupSslRenewCron(install):
 			os.makedirs(crondir)
 
 		certbotpath = subprocess.check_output(['which', 'certbot']).strip().decode('utf8')
-
-		if not os.path.exists(cronfile):
-			cronfiledata = parsetpl('cron.tpl', data={'certbotpath': certbotpath})
-			with open(cronfile, 'w') as cf:
-				cf.write(cronfiledata)
+		cronfiledata = parsetpl('cron.tpl', data={'certbotpath': certbotpath})
+		with open(cronfile, 'w') as cf:
+			cf.write(cronfiledata)
+		runcmd("chmod +x {}".format(cronfile))
 		install.run(self)
 
 setup(name='spsuite',

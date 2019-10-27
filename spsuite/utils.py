@@ -493,6 +493,7 @@ class ServerPilot:
             domainsraw = self.search('server_name', data).split()
             if isinstance(domainsraw, list):
                 domains = self.cleandomains(domainsraw)
+                return domains
             else:
                 raise ValueError('No valid domains found in vhost file.')
         except:

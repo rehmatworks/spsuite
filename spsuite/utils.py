@@ -14,7 +14,7 @@ class ServerPilot:
         self.usrdataroot = os.path.join(self.mainroot, 'srv', 'users')
         self.nginxroot = os.path.join(self.mainroot, 'etc', 'nginx-sp')
         self.apacheroot = os.path.join(self.mainroot, 'etc', 'apache-sp')
-        self.sslroot = ps.path.join(self.nginxroot, 'ssls')
+        self.sslroot = os.path.join(self.nginxroot, 'ssls')
         self.metadir = os.path.join(self.mainroot, 'srv', '.meta')
         self.vhostdir = 'vhosts.d'
         self.username = username

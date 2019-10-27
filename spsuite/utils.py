@@ -476,6 +476,7 @@ class ServerPilot:
     def getappdomains(self):
         if not self.isvalidapp():
             raise Exception('A valid app name has not been provided.')
+        conf_file = self.appnginxconf()
         c = nginx.loadf(conf_file).as_dict
         data = c.get('conf')[-1:]
         try:

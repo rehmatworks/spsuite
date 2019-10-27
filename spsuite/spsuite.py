@@ -403,6 +403,7 @@ def main():
     if args.action == 'getcert':
         sp.setapp(args.app)
         try:
+            print(colored('Activating SSL for app {}'.format(args.app), 'blue'))
             sp.getcert()
         except Exception as e:
             print(colored(str(e), 'yellow'))

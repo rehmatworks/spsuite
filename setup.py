@@ -1,4 +1,22 @@
 from setuptools import setup
+import os
+import subprocess
+from .tools import parsetpl
+
+class SetupSslRenewCron(install):
+	def run(self):
+		crondir = '/etc/cron.weekly'
+		cronfile = os.path.join(crondir, 'spsuite-sslrenewals')
+		if not os.path.exists(crondir):
+			os.makedirs(crondir)
+
+		certbotpath = subprocess.check_output(['which', 'certbot']).strip().decode('utf8')
+
+		if not os.path.exists(cronfile):
+			cronfiledata = parsetpl('cron.tpl', data={'certbotpath': certbotpath})
+			with open(cronfile, 'w'):
+				cronfile.write(cronfiledata)
+		install.run(self)
 
 setup(name='spsuite',
 	version='1.0.0',
@@ -25,4 +43,7 @@ setup(name='spsuite',
 		'certbot'
 	],
 	package_data={'spsuite':['templates/*.tpl']},
+	cmdclass={
+        'install': SetupSslRenewCron
+    }
 )

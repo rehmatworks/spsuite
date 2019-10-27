@@ -4,7 +4,7 @@ import subprocess
 from spsuite.tools import parsetpl
 
 class SetupSslRenewCron(install):
-	def run(self):
+	def run(self, install):
 		crondir = '/etc/cron.weekly'
 		cronfile = os.path.join(crondir, 'spsuite-sslrenewals')
 		if not os.path.exists(crondir):

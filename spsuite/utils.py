@@ -6,6 +6,7 @@ import nginx
 import json
 import validators
 from getpass import getpass
+import re
 
 class ServerPilot:
     def __init__(self, username = False, app = False):

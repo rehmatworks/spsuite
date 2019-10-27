@@ -22,7 +22,7 @@ def main():
     # SSH Users
     subparsers.add_parser('listsysusers', help='Show all SSH users existing on this server.')
     sysuser = subparsers.add_parser('createsysuser', help='Create a new SSH user.')
-    sysuser.add_argument('--username', dest='username', help='Username for your new SSH user.')
+    sysuser.add_argument('--username', dest='username', help='Username for your new SSH user.', required=True)
 
     # Apps
     listapps = subparsers.add_parser('listapps', help='Show all existing apps.')

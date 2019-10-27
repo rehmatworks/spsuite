@@ -485,6 +485,7 @@ def main():
     if args.action == 'unforcessl':
         if doconfirm('Do you really want to unforce HTTPs for the app {}?'.format(args.app)):
             try:
+                sp.setapp(args.app)
                 sp.unforcessl()
                 print(colored('HTTPs has been unforced for the app {}.'.format(args.app), 'green'))
             except Exception as e:

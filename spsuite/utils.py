@@ -294,9 +294,9 @@ class ServerPilot:
         self.fixappperms()
 
     def reloadservices(self):
-        reloadservice('nginx-sp')
-        reloadservice('apache-sp')
-        reloadservice('php{}-fpm-sp'.format(self.php))
+        restartservice('nginx-sp')
+        restartservice('apache-sp')
+        restartservice('php{}-fpm-sp'.format(self.php))
 
     def createapp(self):
         if not self.app:

@@ -7,4 +7,4 @@ spsuite==1.0.0
 tabulate==0.8.5
 termcolor==1.1.0
 validators==0.14.0
-certbot==0.39.0
+certbot==2.6.0
